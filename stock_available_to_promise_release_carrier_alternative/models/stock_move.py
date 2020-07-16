@@ -1,0 +1,49 @@
+# Copyright 2020 Camptocamp SA
+# License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl)
+
+from odoo import models
+from odoo.tools import groupby
+
+
+class StockMove(models.Model):
+    _inherit = "stock.move"
+
+    def _get_processible_quantity(self):
+        self.ensure_one()
+        # use available promised qty to estimate the shipping weight
+        return self.ordered_available_to_promise_uom_qty
+
+    def _get_new_picking_values(self):
+        vals = super()._get_new_picking_values()
+        # Take the carrier_id from the group only when we have a related line
+        # (i.e. we are in an OUT). It reflects the code of the super method in
+        # "delivery" which takes the carrier of the related SO through SO line
+        if self.sale_line_id:
+            if group_carrier := self.group_id.carrier_id:
+                vals["carrier_id"] = group_carrier.id
+        return vals
+
+    def _before_release(self):
+        # if self doesn't match the moves of the related pickings,
+        # extract them in a backorder
+        res = super()._before_release()
+        self._apply_alternative_carrier()
+        return res
+
+    def _apply_alternative_carrier(self):
+        for picking, moves_list in groupby(self, key=lambda move: move.picking_id):
+            if not picking.carrier_id.alternative_carrier_ids:
+                continue
+            # For computing the best carrier, we need the released moves
+            # to be isolated in a dedicated picking.
+            # This is for instance required to have the picking estimated
+            # shipping weight only for the released moves
+            moves = self.browse().union(*moves_list)
+            with self.env.cr.savepoint() as savepoint:
+                if moves != picking.move_ids:
+                    moves._unreleased_to_backorder()
+                    picking = moves.picking_id
+                # If a better carrier is found, assign it, otherwise rollback
+                carrier_changed = picking._apply_alternative_carrier()
+                if not carrier_changed:
+                    savepoint.rollback()
