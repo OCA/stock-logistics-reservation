@@ -6,7 +6,7 @@
     "summary": "Try to reserve moves when goods enter in a location",
     "version": "16.0.1.1.1",
     "author": "Camptocamp, Odoo Community Association (OCA)",
-    "website": "https://github.com/OCA/stock-logistics-warehouse",
+    "website": "https://github.com/OCA/stock-logistics-reservation",
     "category": "Stock Management",
     "depends": [
         "stock",
