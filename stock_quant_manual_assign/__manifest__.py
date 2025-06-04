@@ -7,15 +7,15 @@
 
 {
     "name": "Stock - Manual Quant Assignment",
-    "version": "17.0.1.1.0",
-    "category": "Warehouse",
+    "version": "18.0.1.1.0",
+    "category": "Reservation",
     "license": "AGPL-3",
     "author": "AvanzOSC, "
     "Tecnativa, "
     "ForgeFlow, "
     "Fanha Giang, "
     "Odoo Community Association (OCA)",
-    "website": "https://github.com/OCA/stock-logistics-warehouse",
+    "website": "https://github.com/OCA/stock-logistics-reservation",
     "depends": ["stock"],
     "data": [
         "wizard/assign_manual_quants_view.xml",
