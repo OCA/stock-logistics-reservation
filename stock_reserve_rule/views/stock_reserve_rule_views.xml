@@ -11,7 +11,7 @@
                         name="web_ribbon"
                         title="Archived"
                         bg_color="bg-danger"
-                        attrs="{'invisible': [('active', '=', True)]}"
+                        invisible="active"
                     />
                     <label for="name" class="oe_edit_only" />
                     <h1>
@@ -42,12 +42,12 @@
                     </group>
                     <group string="Removal Rules" name="rule" col="1">
                         <field name="rule_removal_ids" nolabel="1">
-                            <tree name="Removal Rules">
+                            <list name="Removal Rules">
                                 <field name="sequence" widget="handle" />
                                 <field name="name" />
                                 <field name="location_id" />
                                 <field name="removal_strategy" />
-                            </tree>
+                            </list>
                             <form string="Removal Rule">
                                 <group>
                                     <field name="name" />
@@ -59,7 +59,7 @@
                                     <field
                                         name="packaging_level_ids"
                                         widget="many2many_tags"
-                                        attrs="{'invisible': [('removal_strategy', '!=', 'packaging')]}"
+                                        invisible="removal_strategy != 'packaging'"
                                     />
                                     <field
                                         name="quant_domain"
@@ -95,7 +95,7 @@
         <field name="name">stock.reserve.rule</field>
         <field name="model">stock.reserve.rule</field>
         <field name="arch" type="xml">
-            <tree name="Reservation Rule">
+            <list name="Reservation Rule">
                 <field name="sequence" widget="handle" />
                 <field name="name" />
                 <field name="location_id" />
@@ -105,7 +105,7 @@
                     options="{'no_create': 1}"
                 />
                 <field name="rule_domain" />
-            </tree>
+            </list>
         </field>
     </record>
     <record id="action_stock_reserve_rule" model="ir.actions.act_window">

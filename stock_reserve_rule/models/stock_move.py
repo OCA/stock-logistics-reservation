@@ -11,7 +11,6 @@ class StockMove(models.Model):
     def _update_reserved_quantity(
         self,
         need,
-        available_quantity,
         location_id,
         lot_id=None,
         package_id=None,
@@ -23,7 +22,6 @@ class StockMove(models.Model):
             # chained moves must take what was reserved by the previous move
             return super()._update_reserved_quantity(
                 need,
-                available_quantity,
                 location_id=location_id,
                 lot_id=lot_id,
                 package_id=package_id,
@@ -90,7 +88,6 @@ class StockMove(models.Model):
                             # in this strategy, we take as much as we can
                             # from this bin
                             to_take,
-                            location_quantity,
                             location_id=location,
                             lot_id=lot_id,
                             package_id=package_id,
@@ -124,7 +121,6 @@ class StockMove(models.Model):
         # excluded by 'rule._is_rule_applicable'
         return super()._update_reserved_quantity(
             need,
-            available_quantity,
             location_id=location_id,
             lot_id=lot_id,
             package_id=package_id,

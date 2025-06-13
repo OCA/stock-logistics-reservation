@@ -3,13 +3,14 @@
 {
     "name": "Stock Reservation Rules",
     "summary": "Configure reservation rules by location",
-    "version": "16.0.1.0.1",
+    "version": "18.0.1.0.0",
     "author": "Camptocamp, Odoo Community Association (OCA)",
     "website": "https://github.com/OCA/stock-logistics-reservation",
     "category": "Stock Management",
     "depends": [
         "stock",
-        "stock_helper",
+        "stock_location_is_sublocation",
+        "stock_route_location_source",
         "product_packaging_level",
     ],
     "demo": [

@@ -196,7 +196,7 @@ class StockReserveRuleRemoval(models.Model):
         See '_apply_strategy_default' for a short example.
 
         """
-        method_name = "_apply_strategy_%s" % (self.removal_strategy)
+        method_name = f"_apply_strategy_{self.removal_strategy}"
         yield from getattr(self, method_name)(quants)
 
     def _apply_strategy_default(self, quants):
@@ -242,7 +242,10 @@ class StockReserveRuleRemoval(models.Model):
             if location_quantity <= 0:
                 continue
 
-            if float_compare(need, location_quantity, rounding) != -1:
+            if (
+                float_compare(need, location_quantity, precision_rounding=rounding)
+                != -1
+            ):
                 need = yield location, location_quantity, need
 
     def _apply_strategy_packaging(self, quants):
@@ -289,4 +292,5 @@ class StockReserveRuleRemoval(models.Model):
                 if enough_for_packaging and asked_at_least_packaging_qty:
                     # compute how much packaging we can get
                     take = (need // pack_quantity) * pack_quantity
+                    location_quantity -= take
                     need = yield location, location_quantity, take
