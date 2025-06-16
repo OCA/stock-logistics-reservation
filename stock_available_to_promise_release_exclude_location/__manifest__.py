@@ -8,7 +8,7 @@
     "version": "16.0.1.0.0",
     "license": "AGPL-3",
     "author": "ACSONE SA/NV, BCIM, Odoo Community Association (OCA)",
-    "website": "https://github.com/OCA/wms",
+    "website": "https://github.com/OCA/stock-logistics-reservation",
     "depends": [
         "stock_available_to_promise_release",
         "stock_available_immediately_exclude_location",
