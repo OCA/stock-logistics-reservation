@@ -8,7 +8,7 @@
     "version": "18.0.1.0.0",
     "development_status": "Alpha",
     "category": "Inventory/Inventory",
-    "website": "https://github.com/OCA/stock-logistics-workflow",
+    "website": "https://github.com/OCA/stock-logistics-reservation",
     "author": "Moduon, Odoo Community Association (OCA)",
     "maintainers": ["Shide", "rafaelbn"],
     "license": "LGPL-3",
