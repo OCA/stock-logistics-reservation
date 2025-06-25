@@ -6,7 +6,7 @@
     "version": "16.0.3.7.3",
     "summary": "Release Operations based on available to promise",
     "author": "Camptocamp, BCIM, Odoo Community Association (OCA)",
-    "website": "https://github.com/OCA/wms",
+    "website": "https://github.com/OCA/stock-logistics-reservation",
     "category": "Stock Management",
     "depends": ["stock"],
     "data": [
