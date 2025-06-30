@@ -158,8 +158,8 @@ class StockPicking(models.Model):
         action["context"] = {}
         return action
 
-    def _create_backorder(self):
-        backorders = super()._create_backorder()
+    def _create_backorder(self, backorder_moves=None):
+        backorders = super()._create_backorder(backorder_moves=backorder_moves)
         backorders_to_unrelease = backorders.filtered(
             lambda p: p.picking_type_id.unrelease_on_backorder
         )
