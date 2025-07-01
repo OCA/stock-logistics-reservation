@@ -27,7 +27,7 @@ class StockMove(models.Model):
             new_moves |= merged_moves
             if moves != merged_moves:
                 for move in merged_moves:
-                    if not move.quantity_done:
+                    if not move.picked:
                         moves_to_rereserve_ids.append(move.id)
         if moves_to_rereserve_ids:
             moves_to_rereserve = self.browse(moves_to_rereserve_ids)
