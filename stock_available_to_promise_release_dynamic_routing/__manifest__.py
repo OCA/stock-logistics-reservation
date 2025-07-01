@@ -5,7 +5,7 @@
     "summary": "Glue between moves release and dynamic routing",
     "author": "Camptocamp,BCIM,Odoo Community Association (OCA)",
     "maintainers": ["jbaudoux"],
-    "website": "https://github.com/OCA/wms",
+    "website": "https://github.com/OCA/stock-logistics-reservation",
     "category": "Warehouse Management",
     "version": "16.0.1.0.0",
     "license": "AGPL-3",
