@@ -4,7 +4,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 16.0\n"
+"Project-Id-Version: Odoo Server 18.0\n"
 "Report-Msgid-Bugs-To: \n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -115,12 +115,6 @@ msgid "ID"
 msgstr ""
 
 #. module: stock_reserve_rule
-#: model:ir.model.fields,field_description:stock_reserve_rule.field_stock_reserve_rule____last_update
-#: model:ir.model.fields,field_description:stock_reserve_rule.field_stock_reserve_rule_removal____last_update
-msgid "Last Modified on"
-msgstr ""
-
-#. module: stock_reserve_rule
 #: model:ir.model.fields,field_description:stock_reserve_rule.field_stock_reserve_rule__write_uid
 #: model:ir.model.fields,field_description:stock_reserve_rule.field_stock_reserve_rule_removal__write_uid
 msgid "Last Updated by"
@@ -181,7 +175,6 @@ msgstr ""
 #. module: stock_reserve_rule
 #. odoo-python
 #: code:addons/stock_reserve_rule/models/stock_reserve_rule.py:0
-#, python-format
 msgid ""
 "Removal rule '%(removal_name)s' location has to be a child of the rule "
 "location '%(child_rule)s'."
