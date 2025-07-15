@@ -565,9 +565,9 @@ class StockMove(models.Model):
         if unreleased_moves_to_bo:
             unreleased_moves_to_bo._unreleased_to_backorder()
 
+        released_moves._before_release()
         # Pull the released moves
         for move in released_moves:
-            move._before_release()
             values = move._prepare_procurement_values()
             values["move_dest_ids"] = move
             procurement_requests.append(
