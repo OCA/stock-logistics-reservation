@@ -5,6 +5,7 @@ from odoo.addons.sale_stock_available_to_promise_release.tests.common import Com
 
 
 class TestDropshipping(Common):
+    # pylint: disable=W8110
     @classmethod
     def setUpClassProduct(cls):
         super().setUpClassProduct()
@@ -13,7 +14,7 @@ class TestDropshipping(Common):
         cls.product.route_ids = cls.dropshipping_route
         cls.product.seller_ids = cls.env["product.supplierinfo"].create(
             {
-                "name": supplier.id,
+                "partner_id": supplier.id,
                 "product_id": cls.product.id,
             }
         )

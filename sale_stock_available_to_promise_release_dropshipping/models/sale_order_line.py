@@ -9,7 +9,11 @@ class SaleOrderLine(models.Model):
 
     def _on_order_route(self):
         res = super()._on_order_route()
-        dropshipping_route = self.env.ref("stock_dropshipping.route_drop_shipping")
+        dropshipping_route = self.env.ref(
+            "stock_dropshipping.route_drop_shipping", raise_if_not_found=False
+        )
+        if not dropshipping_route:
+            return res
         product_is_dropshipping = dropshipping_route in self.product_id.route_ids
         line_is_dropshipping = dropshipping_route == self.route_id
         return res or product_is_dropshipping or line_is_dropshipping
