@@ -9,7 +9,7 @@
     ),
     "version": "14.0.1.0.0",
     "author": "Camptocamp,Odoo Community Association (OCA)",
-    "website": "https://github.com/OCA/wms",
+    "website": "https://github.com/OCA/stock-logistics-reservation",
     "category": "Stock Management",
     "depends": ["sale_stock_available_to_promise_release", "stock_dropshipping"],
     "installable": True,
