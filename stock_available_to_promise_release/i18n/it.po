@@ -29,9 +29,13 @@ msgstr "N° di movimenti che richiedono il rilascio"
 #. module: stock_available_to_promise_release
 #. odoo-python
 #: code:addons/stock_available_to_promise_release/models/stock_move.py:0
-#, python-format
 msgid "- blocking transfer(s): %(picking_names)s"
 msgstr "- blocco trasferimento(i): %(picking_names)s"
+
+#. module: stock_available_to_promise_release
+#: model_terms:ir.ui.view,arch_db:stock_available_to_promise_release.stock_picking_type_kanban
+msgid "<span class=\"col-6\">Need Release</span>"
+msgstr ""
 
 #. module: stock_available_to_promise_release
 #: model_terms:ir.ui.view,arch_db:stock_available_to_promise_release.view_picking_release_form
@@ -221,12 +225,6 @@ msgstr ""
 "Indica come rilasciare un trasferimento parzialmente o tutto in una volta"
 
 #. module: stock_available_to_promise_release
-#: model:ir.model.fields,field_description:stock_available_to_promise_release.field_stock_release____last_update
-#: model:ir.model.fields,field_description:stock_available_to_promise_release.field_stock_unrelease____last_update
-msgid "Last Modified on"
-msgstr "Ultima modifica il"
-
-#. module: stock_available_to_promise_release
 #: model:ir.model.fields,field_description:stock_available_to_promise_release.field_stock_picking__last_release_date
 msgid "Last Release Date"
 msgstr "Ultima data di rilascio"
@@ -258,7 +256,6 @@ msgstr "Movimenti che richiedono il rilascio"
 #. module: stock_available_to_promise_release
 #: model:ir.model.fields,field_description:stock_available_to_promise_release.field_stock_move__need_release
 #: model:ir.model.fields,field_description:stock_available_to_promise_release.field_stock_picking__need_release
-#: model_terms:ir.ui.view,arch_db:stock_available_to_promise_release.stock_picking_type_kanban
 msgid "Need Release"
 msgstr "Richiede rilascio"
 
@@ -359,6 +356,16 @@ msgid "Release based on Available to Promise"
 msgstr "Rilascio in base alla disponibilità alle promesse"
 
 #. module: stock_available_to_promise_release
+#: model:ir.model,name:stock_available_to_promise_release.model_stock_return_picking
+msgid "Return Picking"
+msgstr ""
+
+#. module: stock_available_to_promise_release
+#: model:ir.model,name:stock_available_to_promise_release.model_stock_return_picking_line
+msgid "Return Picking Line"
+msgstr ""
+
+#. module: stock_available_to_promise_release
 #: model:ir.model.fields,field_description:stock_available_to_promise_release.field_stock_route__allow_unrelease_return_done_move
 #: model:ir.model.fields,field_description:stock_available_to_promise_release.field_stock_rule__allow_unrelease_return_done_move
 msgid "Reverse done transfer on cancellation"
@@ -398,20 +405,19 @@ msgid "Stock Rule"
 msgstr "Regola di giacenza"
 
 #. module: stock_available_to_promise_release
+#: model:ir.model.constraint,message:stock_available_to_promise_release.constraint_res_company_check_stock_release_max_prep_time
+msgid "The 'Transfer Releases Max Prep. Time' must be greater than 0 minutes."
+msgstr ""
+
+#. module: stock_available_to_promise_release
 #. odoo-python
 #: code:addons/stock_available_to_promise_release/models/stock_picking.py:0
-#, python-format
-msgid ""
-"The backorder <a href=# data-oe-model=stock.picking data-oe-"
-"id=%(id)s>%(name)s</a> has been created."
+msgid "The backorder %s has been created."
 msgstr ""
-"È stato creato l'ordine residuo <a href=# data-oe-model=stock.picking data-"
-"oe-id=%(id)s>%(name)s</a>."
 
 #. module: stock_available_to_promise_release
 #. odoo-python
 #: code:addons/stock_available_to_promise_release/models/stock_move.py:0
-#, python-format
 msgid ""
 "The following moves have been un-released: \n"
 "%(move_names)s"
@@ -422,7 +428,6 @@ msgstr ""
 #. module: stock_available_to_promise_release
 #. odoo-python
 #: code:addons/stock_available_to_promise_release/models/stock_move.py:0
-#, python-format
 msgid "The operation %(picking_names)s is done and cannot be returned"
 msgstr "L'operazione %(picking_names)s è conclusa e non può essere resa"
 
@@ -495,15 +500,12 @@ msgstr "Trattenute su ordine residuo"
 #. module: stock_available_to_promise_release
 #. odoo-python
 #: code:addons/stock_available_to_promise_release/models/stock_move.py:0
-#: code:addons/stock_available_to_promise_release/models/stock_picking.py:0
-#, python-format
 msgid "Unsupported operator %s"
 msgstr "Operatore %s non supportato"
 
 #. module: stock_available_to_promise_release
 #. odoo-python
 #: code:addons/stock_available_to_promise_release/models/stock_picking.py:0
-#, python-format
 msgid "Unsupported operator: %s"
 msgstr "Operatore non supportato: %s"
 
@@ -565,7 +567,6 @@ msgstr ""
 #. module: stock_available_to_promise_release
 #. odoo-python
 #: code:addons/stock_available_to_promise_release/models/stock_move.py:0
-#, python-format
 msgid "You are not allowed to unrelease those deliveries:\n"
 msgstr "Non si è autorizzati a derilasciare quelle consegne:\n"
 
@@ -578,6 +579,17 @@ msgstr "giorni"
 #: model_terms:ir.ui.view,arch_db:stock_available_to_promise_release.res_config_settings_view_form_stock
 msgid "minutes"
 msgstr "minuti"
+
+#~ msgid "Last Modified on"
+#~ msgstr "Ultima modifica il"
+
+#, python-format
+#~ msgid ""
+#~ "The backorder <a href=# data-oe-model=stock.picking data-oe-"
+#~ "id=%(id)s>%(name)s</a> has been created."
+#~ msgstr ""
+#~ "È stato creato l'ordine residuo <a href=# data-oe-model=stock.picking "
+#~ "data-oe-id=%(id)s>%(name)s</a>."
 
 #~ msgid "Shipment date"
 #~ msgstr "Data spedizione"
