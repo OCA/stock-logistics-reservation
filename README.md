@@ -26,6 +26,7 @@ Available addons
 addon | version | maintainers | summary
 --- | --- | --- | ---
 [sale_stock_available_to_promise_release](sale_stock_available_to_promise_release/) | 18.0.1.1.0 |  | Integration between Sales and Available to Promise Release
+[sale_stock_available_to_promise_release_dropshipping](sale_stock_available_to_promise_release_dropshipping/) | 18.0.1.0.0 |  | Glue module between sale_stock_available_to_promise_release and stock_dropshipping
 [stock_available_to_promise_release](stock_available_to_promise_release/) | 18.0.1.1.1 |  | Release Operations based on available to promise
 [stock_available_to_promise_release_exclude_location](stock_available_to_promise_release_exclude_location/) | 18.0.1.0.0 |  | Exclude locations from available stock
 [stock_move_auto_assign](stock_move_auto_assign/) | 18.0.1.0.1 |  | Try to reserve moves when goods enter in a location
