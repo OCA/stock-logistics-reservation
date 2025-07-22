@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2025-04-29 16:26+0000\n"
+"PO-Revision-Date: 2025-07-22 06:56+0000\n"
 "Last-Translator: mymage <stefano.consolaro@mymage.it>\n"
 "Language-Team: none\n"
 "Language: it\n"
@@ -35,7 +35,7 @@ msgstr "- blocco trasferimento(i): %(picking_names)s"
 #. module: stock_available_to_promise_release
 #: model_terms:ir.ui.view,arch_db:stock_available_to_promise_release.stock_picking_type_kanban
 msgid "<span class=\"col-6\">Need Release</span>"
-msgstr ""
+msgstr "<span class=\"col-6\">Richiede rilascio</span>"
 
 #. module: stock_available_to_promise_release
 #: model_terms:ir.ui.view,arch_db:stock_available_to_promise_release.view_picking_release_form
@@ -358,12 +358,12 @@ msgstr "Rilascio in base alla disponibilità alle promesse"
 #. module: stock_available_to_promise_release
 #: model:ir.model,name:stock_available_to_promise_release.model_stock_return_picking
 msgid "Return Picking"
-msgstr ""
+msgstr "Prelievo di reso"
 
 #. module: stock_available_to_promise_release
 #: model:ir.model,name:stock_available_to_promise_release.model_stock_return_picking_line
 msgid "Return Picking Line"
-msgstr ""
+msgstr "Riga prelievo di reso"
 
 #. module: stock_available_to_promise_release
 #: model:ir.model.fields,field_description:stock_available_to_promise_release.field_stock_route__allow_unrelease_return_done_move
@@ -408,12 +408,14 @@ msgstr "Regola di giacenza"
 #: model:ir.model.constraint,message:stock_available_to_promise_release.constraint_res_company_check_stock_release_max_prep_time
 msgid "The 'Transfer Releases Max Prep. Time' must be greater than 0 minutes."
 msgstr ""
+"Il 'Tempo massimo preparazione rilascio trasferimento' deve essere maggiore "
+"di 0 minuti."
 
 #. module: stock_available_to_promise_release
 #. odoo-python
 #: code:addons/stock_available_to_promise_release/models/stock_picking.py:0
 msgid "The backorder %s has been created."
-msgstr ""
+msgstr "L'ordine residuo %s è stato creato."
 
 #. module: stock_available_to_promise_release
 #. odoo-python
