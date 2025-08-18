@@ -351,7 +351,7 @@ msgstr ""
 #. module: stock_available_to_promise_release
 #: model:ir.model,name:stock_available_to_promise_release.model_stock_unrelease
 #: model_terms:ir.ui.view,arch_db:stock_available_to_promise_release.view_stock_unrelease_form
-msgid "Stock Allocations Un Release"
+msgid "Stock Allocations Unrelease"
 msgstr ""
 
 #. module: stock_available_to_promise_release
@@ -402,7 +402,7 @@ msgstr ""
 
 #. module: stock_available_to_promise_release
 #: model_terms:ir.ui.view,arch_db:stock_available_to_promise_release.view_stock_unrelease_form
-msgid "The selected records will be un released."
+msgid "The selected records will be unreleased."
 msgstr ""
 
 #. module: stock_available_to_promise_release
@@ -433,22 +433,22 @@ msgstr ""
 #. module: stock_available_to_promise_release
 #: model_terms:ir.ui.view,arch_db:stock_available_to_promise_release.view_picking_release_form
 #: model_terms:ir.ui.view,arch_db:stock_available_to_promise_release.view_stock_unrelease_form
-msgid "Un Release"
-msgstr ""
-
-#. module: stock_available_to_promise_release
-#: model:ir.actions.act_window,name:stock_available_to_promise_release.action_view_stock_move_unrelease_form
-msgid "Un Release Move Allocations"
-msgstr ""
-
-#. module: stock_available_to_promise_release
-#: model:ir.actions.act_window,name:stock_available_to_promise_release.action_view_stock_picking_unrelease_form
-msgid "Un Release Transfers Allocations"
+msgid "Unrelease"
 msgstr ""
 
 #. module: stock_available_to_promise_release
 #: model:ir.model.fields,field_description:stock_available_to_promise_release.field_stock_move__unrelease_allowed
 msgid "Unrelease Allowed"
+msgstr ""
+
+#. module: stock_available_to_promise_release
+#: model:ir.actions.act_window,name:stock_available_to_promise_release.action_view_stock_move_unrelease_form
+msgid "Unrelease Move Allocations"
+msgstr ""
+
+#. module: stock_available_to_promise_release
+#: model:ir.actions.act_window,name:stock_available_to_promise_release.action_view_stock_picking_unrelease_form
+msgid "Unrelease Transfers Allocations"
 msgstr ""
 
 #. module: stock_available_to_promise_release
