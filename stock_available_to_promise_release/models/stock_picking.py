@@ -19,7 +19,7 @@ class StockPicking(models.Model):
         compute="_compute_release_ready", search="_search_release_ready"
     )
     release_ready_count = fields.Integer(
-        string="# of moves ready", compute="_compute_release_ready"
+        string="# of moves ready", compute="_compute_release_ready_count"
     )
     date_priority = fields.Datetime(
         string="Priority Date",
@@ -85,15 +85,26 @@ class StockPicking(models.Model):
         self.move_ids.invalidate_recordset(["ordered_available_to_promise_qty"])
         for picking in self:
             moves = picking.move_ids.filtered(lambda move: move._is_release_needed())
-            release_ready = False
-            release_ready_count = sum(1 for move in moves if move._is_release_ready())
-            if moves:
-                if picking.release_policy == "one":
-                    release_ready = release_ready_count == len(moves)
-                else:
-                    release_ready = bool(release_ready_count)
-            picking.release_ready_count = release_ready_count
-            picking.release_ready = release_ready
+            if not moves:
+                picking.release_ready = False
+            elif picking.release_policy == "one":
+                picking.release_ready = all(move._is_release_ready() for move in moves)
+            else:
+                picking.release_ready = any(move._is_release_ready() for move in moves)
+
+    # move_ids.ordered_available_to_promise_qty has no depends, so we need to
+    # invalidate cache before accessing this release_ready computed value
+    @api.depends(lambda self: self._get_release_ready_depends())
+    def _compute_release_ready_count(self):
+        self.move_ids.invalidate_recordset(["ordered_available_to_promise_qty"])
+        for picking in self:
+            moves = picking.move_ids.filtered(lambda move: move._is_release_needed())
+            if not moves:
+                picking.release_ready_count = 0
+            else:
+                picking.release_ready_count = sum(
+                    1 for move in moves if move._is_release_ready()
+                )
 
     def _search_release_ready(self, operator, value):
         if operator != "=":
