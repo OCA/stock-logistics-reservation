@@ -59,20 +59,62 @@
     <record id="view_picking_release_tree" model="ir.ui.view">
         <field name="name">stock.picking.release.tree</field>
         <field name="model">stock.picking</field>
-        <field name="mode">primary</field>
-        <field name="inherit_id" ref="stock.vpicktree" />
-        <field eval="900" name="priority" />
+        <field name="inherit_id" eval="False" />
         <field name="arch" type="xml">
-            <field name="origin" position="after">
-                <field name="group_id" optional="hide" />
-            </field>
-            <field name="scheduled_date" position="after">
-                <field name="last_release_date" optional="hide" />
-            </field>
-            <list position="inside">
-                <field name="date_priority" optional="show" />
+            <list
+                string="Picking list"
+                multi_edit="1"
+                sample="1"
+                js_class="stock_list_view"
+            >
+                <field name="name" decoration-bf="1" />
+                <field
+                    name="location_id"
+                    options="{'no_create': True}"
+                    string="From"
+                    groups="stock.group_stock_multi_locations"
+                    optional="hide"
+                    readonly="state == 'done'"
+                />
+                <field
+                    name="location_dest_id"
+                    options="{'no_create': True}"
+                    string="To"
+                    groups="stock.group_stock_multi_locations"
+                    optional="hide"
+                    readonly="state == 'done'"
+                />
+                <field
+                    name="partner_id"
+                    optional="show"
+                    readonly="state in ['cancel', 'done']"
+                />
+                <field name="priority" widget="priority" nolabel="1" />
+                <field name="date_priority" />
                 <field name="need_release" column_invisible="1" />
                 <field name="release_ready" />
+                <field
+                    name="scheduled_date"
+                    optional="hide"
+                    widget="remaining_days"
+                    invisible="state in ('done', 'cancel')"
+                    readonly="state in ['cancel', 'done']"
+                />
+                <field
+                    name="company_id"
+                    groups="base.group_multi_company"
+                    optional="hide"
+                />
+                <field
+                    name="state"
+                    optional="show"
+                    widget="badge"
+                    decoration-danger="state=='cancel'"
+                    decoration-info="state== 'assigned'"
+                    decoration-muted="state == 'draft'"
+                    decoration-success="state == 'done'"
+                    decoration-warning="state not in ('draft','cancel','done','assigned')"
+                />
                 <field name="release_ready_count" />
                 <button
                     name="action_open_move_need_release"
@@ -81,6 +123,10 @@
                     icon="fa-cubes"
                     type="object"
                     invisible="not need_release"
+                />
+                <field
+                    name="activity_exception_decoration"
+                    widget="activity_exception"
                 />
             </list>
         </field>
