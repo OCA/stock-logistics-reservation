@@ -19,6 +19,11 @@ msgstr ""
 
 #. module: sale_stock_available_to_promise_release
 #: model_terms:ir.ui.view,arch_db:sale_stock_available_to_promise_release.report_saleorder_document
+msgid "<strong>Expected delivery</strong>"
+msgstr ""
+
+#. module: sale_stock_available_to_promise_release
+#: model_terms:ir.ui.view,arch_db:sale_stock_available_to_promise_release.report_saleorder_document
 msgid "As of"
 msgstr "Dal"
 
@@ -87,6 +92,11 @@ msgid "Further Shipment"
 msgstr "Altra spedizione"
 
 #. module: sale_stock_available_to_promise_release
+#: model:ir.model.fields,field_description:sale_stock_available_to_promise_release.field_sale_order__is_ok_expected_delivery_date
+msgid "Is Ok Expected Delivery Date"
+msgstr ""
+
+#. module: sale_stock_available_to_promise_release
 #: model_terms:ir.ui.view,arch_db:sale_stock_available_to_promise_release.view_move_release_search
 msgid "Late Shipment"
 msgstr "Spedizione in ritardo"
@@ -148,7 +158,8 @@ msgstr "Riga ordine di vendita"
 #: model:ir.model.fields,help:sale_stock_available_to_promise_release.field_res_config_settings__stock_sale_report_display_is_available
 #: model_terms:ir.ui.view,arch_db:sale_stock_available_to_promise_release.res_config_settings_view
 msgid "Show Available column in SO and quotation reports"
-msgstr "Visualizza colonna disponibilità nell'OV e nei resoconti dei preventivi"
+msgstr ""
+"Visualizza colonna disponibilità nell'OV e nei resoconti dei preventivi"
 
 #. module: sale_stock_available_to_promise_release
 #: model:ir.model,name:sale_stock_available_to_promise_release.model_stock_move
