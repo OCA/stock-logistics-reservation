@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Odoo Server 13.0+e\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-07-12 17:07+0000\n"
-"PO-Revision-Date: 2025-09-03 09:43+0000\n"
+"PO-Revision-Date: 2025-09-18 15:42+0000\n"
 "Last-Translator: mymage <stefano.consolaro@mymage.it>\n"
 "Language-Team: \n"
 "Language: it\n"
@@ -20,7 +20,7 @@ msgstr ""
 #. module: sale_stock_available_to_promise_release
 #: model_terms:ir.ui.view,arch_db:sale_stock_available_to_promise_release.report_saleorder_document
 msgid "<strong>Expected delivery</strong>"
-msgstr ""
+msgstr "<strong>Consegna prevista</strong>"
 
 #. module: sale_stock_available_to_promise_release
 #: model_terms:ir.ui.view,arch_db:sale_stock_available_to_promise_release.report_saleorder_document
@@ -94,7 +94,7 @@ msgstr "Altra spedizione"
 #. module: sale_stock_available_to_promise_release
 #: model:ir.model.fields,field_description:sale_stock_available_to_promise_release.field_sale_order__is_ok_expected_delivery_date
 msgid "Is Ok Expected Delivery Date"
-msgstr ""
+msgstr "La data prevista consegna va bene"
 
 #. module: sale_stock_available_to_promise_release
 #: model_terms:ir.ui.view,arch_db:sale_stock_available_to_promise_release.view_move_release_search
