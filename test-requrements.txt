@@ -1,0 +1,2 @@
+
+odoo-addon-stock-reserve-rule @ git+https://github.com/OCA/stock-logistics-reservation@refs/pull/26/head#subdirectory=stock_reserve_rule
