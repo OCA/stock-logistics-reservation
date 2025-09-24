@@ -1,0 +1,2 @@
+- Go to Inventory > Configuration > Warehouse Management > Reservation Rules
+- On the desired rule for the desired location, use the 'Full Demand' removal strategy
