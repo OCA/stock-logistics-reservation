@@ -561,6 +561,7 @@ class StockMove(models.Model):
             lambda m: m.state not in ("done", "cancel")
             and m.need_release
             and not m.rule_id.no_backorder_at_release
+            and m.need_release
         )
         if unreleased_moves_to_bo:
             unreleased_moves_to_bo._unreleased_to_backorder()
