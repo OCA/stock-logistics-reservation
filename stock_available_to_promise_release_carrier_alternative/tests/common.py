@@ -32,6 +32,7 @@ class DeliveryCarrierAlternativeCommon(PromiseReleaseCommonCase):
         cls.product.weight = 10.0
         cls.product.volume = 10.0
         cls.delivery_product = cls.env.ref("delivery.product_product_delivery")
+        cls.product2.weight = 0.1
 
     @classmethod
     def setUpClassCarrier(cls):

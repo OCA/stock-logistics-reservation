@@ -32,13 +32,20 @@ class StockMove(models.Model):
         for picking, moves_list in groupby(self, key=lambda move: move.picking_id):
             if not picking.carrier_id.alternative_carrier_ids:
                 continue
+            # Don't apply alternative carrier when there is already a released move
+            if any(
+                not move.need_release and move.state != "cancel"
+                for move in picking.move_ids
+            ):
+                continue
             # For computing the best carrier, we need the released moves
             # to be isolated in a dedicated picking.
             # This is for instance required to have the picking estimated
             # shipping weight only for the released moves
             moves = self.browse().union(*moves_list)
             with self.env.cr.savepoint() as savepoint:
-                if moves != picking.move_ids:
+                all_need_release_moves = picking.move_ids.filtered("need_release")
+                if moves != all_need_release_moves:
                     moves._unreleased_to_backorder(split_order=True)
                     picking = moves.picking_id
                 # If a better carrier is found, assign it, otherwise rollback

@@ -157,3 +157,38 @@ class TestDeliveryCarrierAlternative(DeliveryCarrierAlternativeCommon):
         self.assertEqual(self.delivery.carrier_id, self.normal_carrier)
         self.assertAlmostEqual(self.delivery.weight, 20.0)
         self.assertEqual(self.delivery.backorder_id.backorder_id, new_delivery)
+
+    def test_delivery_release_unrelease_keep_same_carrier(self):
+        """Check releasing/unreleasing moves and carrier is consistent.
+
+        A delivery with 2 products, one heavy, one light.
+        Releasing everything
+            -> carrier is normal.
+        Unreleasing the light product and releasing it again
+            -> the light product should be added to the existing
+               normal delivery and not to a new delivery with
+               carrier the poste.
+        """
+        delivery = self._create_picking_chain(
+            self.wh, [(self.product1, 5), (self.product2, 2)]
+        )
+        delivery.carrier_id = self.normal_carrier
+        self.env["stock.quant"]._update_available_quantity(
+            self.product1, self.loc_stock, 10
+        )
+        self.env["stock.quant"]._update_available_quantity(
+            self.product2, self.loc_stock, 2
+        )
+        delivery.release_available_to_promise()
+        self.assertEqual(delivery.carrier_id, self.normal_carrier)
+        move_light = delivery.move_ids.filtered(
+            lambda move: move.product_id == self.product2
+        )
+        move_light.unrelease()
+        res = move_light.release_available_to_promise()
+        delivery_2 = res.picking_id.filtered(
+            lambda pick: pick.picking_type_id.code == "outgoing"
+        )
+        self.assertTrue(delivery_2)
+        self.assertEqual(delivery_2, delivery)
+        self.assertEqual(delivery_2.carrier_id, self.normal_carrier)

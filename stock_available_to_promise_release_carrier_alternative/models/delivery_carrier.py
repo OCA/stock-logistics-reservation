@@ -2,7 +2,6 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl)
 
 from odoo import fields, models
-from odoo.tools.safe_eval import const_eval
 
 ALTERNATIVE_CARRIER_IDS_HELP = """
     Change delivery to one of those alternative carriers if the conditions are met.
