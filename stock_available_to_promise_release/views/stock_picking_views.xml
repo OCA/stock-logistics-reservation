@@ -137,8 +137,8 @@
     <menuitem
         action="stock_picking_release_action"
         id="stock_picking_release_menu"
-        parent="stock.menu_stock_warehouse_mgmt"
-        sequence="10"
+        parent="stock.menu_stock_transfers"
+        sequence="50"
         groups="stock.group_stock_manager,stock.group_stock_user"
     />
 </odoo>
