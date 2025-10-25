@@ -436,6 +436,12 @@ msgid "The selected records will be unreleased."
 msgstr ""
 
 #. module: stock_available_to_promise_release
+#. odoo-python
+#: code:addons/stock_available_to_promise_release/models/stock_picking.py:0
+msgid "The split order %s has been created."
+msgstr ""
+
+#. module: stock_available_to_promise_release
 #: model_terms:ir.actions.act_window,help:stock_available_to_promise_release.stock_move_release_action
 msgid ""
 "This menu gives you the full traceability of inventory\n"
