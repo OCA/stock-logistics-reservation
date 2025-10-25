@@ -15,7 +15,17 @@ class StockPicking(models.Model):
         # Set a context key to not trigger a carrier change on the
         # procurement group
         self.with_context(skip_align_group_carrier=True).carrier_id = carrier
-        self.group_id = self.group_id.copy(default={"carrier_id": carrier.id})
+        defaults = {
+            "carrier_id": carrier.id,
+            "name": self.env._(
+                "%s - Alternative carrier %s", self.group_id.name, carrier.name
+            ),
+        }
+        self.group_id = self.group_id.copy(default=defaults)
+        active_moves = self.move_ids.filtered(
+            lambda m: m.state not in ("done", "cancel")
+        )
+        active_moves.group_id = self.group_id
         return True
 
     def _get_preferred_carrier(self):
