@@ -41,7 +41,7 @@ class StockMove(models.Model):
             moves = self.browse().union(*moves_list)
             with self.env.cr.savepoint() as savepoint:
                 if moves != picking.move_ids:
-                    moves._unreleased_to_backorder()
+                    moves._unreleased_to_backorder(split_order=True)
                     picking = moves.picking_id
                 # If a better carrier is found, assign it, otherwise rollback
                 carrier_changed = picking._apply_alternative_carrier()
