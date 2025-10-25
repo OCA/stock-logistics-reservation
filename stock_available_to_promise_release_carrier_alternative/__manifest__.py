@@ -14,7 +14,6 @@
         "delivery_carrier_picking_valid",
         "stock_available_to_promise_release",
         "delivery_procurement_group_carrier",
-        "delivery_total_weight_from_packaging",
     ],
     "data": [
         "views/delivery_carrier.xml",

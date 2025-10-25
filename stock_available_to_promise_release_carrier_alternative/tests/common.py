@@ -2,16 +2,12 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl)
 from odoo.fields import Command
 
-from odoo.addons.stock.models.stock_move import PROCUREMENT_PRIORITIES
 from odoo.addons.stock_available_to_promise_release.tests.common import (
     PromiseReleaseCommonCase,
 )
 
-PRIORITY_NORMAL = PROCUREMENT_PRIORITIES[0][0]
-PRIORITY_URGENT = PROCUREMENT_PRIORITIES[1][0]
 
-
-class DeliveryCarrierPreferenceCommon(PromiseReleaseCommonCase):
+class DeliveryCarrierAlternativeCommon(PromiseReleaseCommonCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
@@ -19,6 +15,15 @@ class DeliveryCarrierPreferenceCommon(PromiseReleaseCommonCase):
         cls.customer = ref("base.res_partner_12")
         cls.setUpClassProduct()
         cls.setUpClassCarrier()
+
+        cls.wh.delivery_route_id.write(
+            {
+                "available_to_promise_defer_pull": True,
+            }
+        )
+        cls.outgoing_pick_type = cls.wh.out_type_id
+        cls.delivery = cls._create_picking_chain(cls.wh, [(cls.product1, 5)])
+        cls.delivery.carrier_id = cls.normal_carrier
 
     @classmethod
     def setUpClassProduct(cls):
@@ -31,11 +36,18 @@ class DeliveryCarrierPreferenceCommon(PromiseReleaseCommonCase):
     @classmethod
     def setUpClassCarrier(cls):
         cls.carrier_model = cls.env["delivery.carrier"]
-        cls.normal_delivery_carrier = cls.carrier_model.create(
+        cls.normal_carrier = cls.carrier_model.create(
             {
                 "name": "Normal Carrier",
                 "product_id": cls.delivery_product.id,
                 "sequence": 10,
+            }
+        )
+        cls.super_fast_carrier = cls.env["delivery.carrier"].create(
+            {
+                "name": "Super fast carrier",
+                "product_id": cls.delivery_product.id,
+                "sequence": 20,
                 "max_weight": 20,
             }
         )
@@ -43,75 +55,13 @@ class DeliveryCarrierPreferenceCommon(PromiseReleaseCommonCase):
             {
                 "name": "Poste Carrier",
                 "product_id": cls.delivery_product.id,
-                "sequence": 20,
-                "max_weight": 40,
-            }
-        )
-        cls.super_fast_carrier = cls.env["delivery.carrier"].create(
-            {
-                "name": "Super fast carrier",
-                "product_id": cls.delivery_product.id,
                 "sequence": 30,
-                "picking_domain": f"[('priority', '=', '{PRIORITY_URGENT}')]",
+                "max_weight": 30,
             }
         )
-        cls.free_delivery_carrier = cls.carrier_model.create(
-            {
-                "name": "Free Carrier",
-                "product_id": cls.delivery_product.id,
-                "sequence": 40,
-            }
-        )
-        cls.normal_delivery_carrier.alternative_carrier_ids = [
-            Command.set(
-                (
-                    cls.the_poste_carrier
-                    | cls.super_fast_carrier
-                    | cls.free_delivery_carrier
-                ).ids
-            )
-        ]
-        cls.the_poste_carrier.alternative_carrier_ids = [
-            Command.set(
-                (
-                    cls.normal_delivery_carrier
-                    | cls.super_fast_carrier
-                    | cls.free_delivery_carrier
-                ).ids
-            )
-        ]
-        cls.super_fast_carrier.alternative_carrier_ids = [
-            Command.set(
-                (
-                    cls.normal_delivery_carrier
-                    | cls.the_poste_carrier
-                    | cls.free_delivery_carrier
-                ).ids
-            )
-        ]
-        cls.free_delivery_carrier.alternative_carrier_ids = [
-            Command.set(
-                (
-                    cls.normal_delivery_carrier
-                    | cls.the_poste_carrier
-                    | cls.super_fast_carrier
-                ).ids
-            )
-        ]
-        cls.wh.delivery_route_id.write(
-            {
-                "available_to_promise_defer_pull": True,
-            }
-        )
-        cls.outgoing_pick_type = cls.wh.out_type_id
 
     @classmethod
-    def _create_out_picking(cls, product_qty=None, carrier=None):
-        if not product_qty:
-            product_qty = [(cls.product, 2.0)]
-        pickings = cls._create_picking_chain(cls.wh, product_qty)
-        if not carrier:
-            # set the carrier with the highest sequence here
-            carrier = cls.free_delivery_carrier
-        pickings.write({"carrier_id": carrier.id})
-        return pickings
+    def set_alternatives(cls):
+        cls.normal_carrier.alternative_carrier_ids = [
+            Command.set((cls.the_poste_carrier | cls.super_fast_carrier).ids)
+        ]
