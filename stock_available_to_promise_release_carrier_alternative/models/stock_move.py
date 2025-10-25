@@ -24,11 +24,9 @@ class StockMove(models.Model):
         return vals
 
     def _before_release(self):
-        # if self doesn't match the moves of the related pickings,
-        # extract them in a backorder
-        res = super()._before_release()
-        self._apply_alternative_carrier()
-        return res
+        # Apply alternative carrier before updating the date
+        self = self._apply_alternative_carrier()
+        return super()._before_release()
 
     def _apply_alternative_carrier(self):
         for picking, moves_list in groupby(self, key=lambda move: move.picking_id):
@@ -47,3 +45,4 @@ class StockMove(models.Model):
                 carrier_changed = picking._apply_alternative_carrier()
                 if not carrier_changed:
                     savepoint.rollback()
+        return self
