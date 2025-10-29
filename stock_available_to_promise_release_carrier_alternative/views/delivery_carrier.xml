@@ -9,11 +9,6 @@
         <field name="arch" type="xml">
             <xpath expr="//group[@name='provider_details']" position="inside">
                 <field name="alternative_carrier_ids" widget="many2many_tags" />
-                <field
-                    name="picking_domain"
-                    widget="domain"
-                    options="{'model': 'stock.picking', 'in_dialog': true}"
-                />
             </xpath>
         </field>
     </record>

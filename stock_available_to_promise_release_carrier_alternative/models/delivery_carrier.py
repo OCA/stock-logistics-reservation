@@ -20,14 +20,3 @@ class DeliveryCarrier(models.Model):
         column2="alternative_id",
         help=ALTERNATIVE_CARRIER_IDS_HELP,
     )
-    picking_domain = fields.Char(
-        default="[]",
-        help="Domain to restrict application of this preference "
-        "for carrier selection on pickings",
-    )
-
-    def _match_picking(self, picking):
-        res = super()._match_picking(picking)
-        if domain := const_eval(self.picking_domain):
-            return res and bool(picking.filtered_domain(domain))
-        return res

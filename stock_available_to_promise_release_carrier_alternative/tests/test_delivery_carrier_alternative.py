@@ -30,23 +30,6 @@ class TestDeliveryCarrierAlternative(DeliveryCarrierAlternativeCommon):
         self.assertAlmostEqual(self.delivery.weight, 40.0)
         self.assertEqual(self.delivery.carrier_id, self.normal_carrier)
 
-    def test_alternative_domain(self):
-        """
-        3 available to promise, weight is 30, second alternative excluded by domain
-        """
-        self.set_alternatives()
-        self.env["stock.quant"]._update_available_quantity(
-            self.product1, self.loc_stock, 3
-        )
-        self.the_poste_carrier.picking_domain = "[('id', '=', 0)]"
-        self.delivery.release_available_to_promise()
-        self.assertAlmostEqual(self.delivery.weight, 30.0)
-        self.assertEqual(self.delivery.carrier_id, self.normal_carrier)
-        self.assertEqual(self.delivery.group_id.carrier_id, self.normal_carrier)
-        backorder = self.delivery.backorder_ids
-        self.assertEqual(backorder.carrier_id, self.normal_carrier)
-        self.assertEqual(backorder.group_id.carrier_id, self.normal_carrier)
-
     def test_alternative_theposte(self):
         """
         3 available to promise, weight is 30, second alternative valid
