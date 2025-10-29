@@ -39,10 +39,14 @@ class TestDeliveryCarrierAlternative(DeliveryCarrierAlternativeCommon):
             self.product1, self.loc_stock, 3
         )
         self.delivery.release_available_to_promise()
-        self.assertAlmostEqual(self.delivery.weight, 30.0)
-        self.assertEqual(self.delivery.carrier_id, self.the_poste_carrier)
-        self.assertEqual(self.delivery.group_id.carrier_id, self.the_poste_carrier)
-        backorder = self.delivery.backorder_ids
+        # the delivery is now a backorder of the split order
+        splitorder = self.delivery.backorder_id
+        self.assertFalse(splitorder.need_release)
+        self.assertAlmostEqual(splitorder.weight, 30.0)
+        self.assertEqual(splitorder.carrier_id, self.the_poste_carrier)
+        self.assertEqual(splitorder.group_id.carrier_id, self.the_poste_carrier)
+        backorder = self.delivery
+        self.assertTrue(backorder.need_release)
         self.assertEqual(backorder.carrier_id, self.normal_carrier)
         self.assertEqual(backorder.group_id.carrier_id, self.normal_carrier)
 
@@ -55,10 +59,14 @@ class TestDeliveryCarrierAlternative(DeliveryCarrierAlternativeCommon):
             self.product1, self.loc_stock, 2
         )
         self.delivery.release_available_to_promise()
-        self.assertAlmostEqual(self.delivery.weight, 20.0)
-        self.assertEqual(self.delivery.carrier_id, self.super_fast_carrier)
-        self.assertEqual(self.delivery.group_id.carrier_id, self.super_fast_carrier)
-        backorder = self.delivery.backorder_ids
+        # the delivery is now a backorder of the split order
+        splitorder = self.delivery.backorder_id
+        self.assertFalse(splitorder.need_release)
+        self.assertAlmostEqual(splitorder.weight, 20.0)
+        self.assertEqual(splitorder.carrier_id, self.super_fast_carrier)
+        self.assertEqual(splitorder.group_id.carrier_id, self.super_fast_carrier)
+        backorder = self.delivery
+        self.assertTrue(backorder.need_release)
         self.assertEqual(backorder.carrier_id, self.normal_carrier)
         self.assertEqual(backorder.group_id.carrier_id, self.normal_carrier)
 
@@ -139,7 +147,7 @@ class TestDeliveryCarrierAlternative(DeliveryCarrierAlternativeCommon):
         self.assertAlmostEqual(new_delivery.weight, 30.0)
         self.assertEqual(self.delivery.carrier_id, self.normal_carrier)
         self.assertAlmostEqual(self.delivery.weight, 20.0)
-        self.assertEqual(self.delivery.backorder_id.backorder_id, new_delivery)
+        self.assertEqual(self.delivery.backorder_id, new_delivery)
 
     def test_delivery_release_unrelease_keep_same_carrier(self):
         """Check releasing/unreleasing moves and carrier is consistent.

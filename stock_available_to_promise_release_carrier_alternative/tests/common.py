@@ -37,18 +37,11 @@ class DeliveryCarrierAlternativeCommon(PromiseReleaseCommonCase):
     @classmethod
     def setUpClassCarrier(cls):
         cls.carrier_model = cls.env["delivery.carrier"]
-        cls.normal_carrier = cls.carrier_model.create(
-            {
-                "name": "Normal Carrier",
-                "product_id": cls.delivery_product.id,
-                "sequence": 10,
-            }
-        )
         cls.super_fast_carrier = cls.env["delivery.carrier"].create(
             {
                 "name": "Super fast carrier",
                 "product_id": cls.delivery_product.id,
-                "sequence": 20,
+                "sequence": 10,
                 "max_weight": 20,
             }
         )
@@ -56,8 +49,15 @@ class DeliveryCarrierAlternativeCommon(PromiseReleaseCommonCase):
             {
                 "name": "Poste Carrier",
                 "product_id": cls.delivery_product.id,
-                "sequence": 30,
+                "sequence": 20,
                 "max_weight": 30,
+            }
+        )
+        cls.normal_carrier = cls.carrier_model.create(
+            {
+                "name": "Normal Carrier",
+                "product_id": cls.delivery_product.id,
+                "sequence": 30,
             }
         )
 
