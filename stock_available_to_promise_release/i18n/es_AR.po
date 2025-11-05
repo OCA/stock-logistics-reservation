@@ -165,6 +165,11 @@ msgstr ""
 "existencias disponibles para prometer."
 
 #. module: stock_available_to_promise_release
+#: model_terms:ir.ui.view,arch_db:stock_available_to_promise_release.view_picking_release_tree
+msgid "From"
+msgstr ""
+
+#. module: stock_available_to_promise_release
 #: model:ir.model.fields,field_description:stock_available_to_promise_release.field_stock_release__id
 #: model:ir.model.fields,field_description:stock_available_to_promise_release.field_stock_unrelease__id
 msgid "ID"
@@ -272,6 +277,11 @@ msgstr "Ordenada Disponible para Prometer (Cantidad Real)"
 #: model:ir.model,name:stock_available_to_promise_release.model_stock_picking_type
 msgid "Picking Type"
 msgstr "Tipo de Entrega"
+
+#. module: stock_available_to_promise_release
+#: model_terms:ir.ui.view,arch_db:stock_available_to_promise_release.view_picking_release_tree
+msgid "Picking list"
+msgstr ""
 
 #. module: stock_available_to_promise_release
 #: model:ir.model.fields,field_description:stock_available_to_promise_release.field_stock_picking_type__prevent_new_move_after_release
@@ -445,6 +455,11 @@ msgstr ""
 "                 de inventario sobre un producto específico. Puede filtrar "
 "por producto\n"
 "                 para ver todos los movimientos pasados o futuros del mismo."
+
+#. module: stock_available_to_promise_release
+#: model_terms:ir.ui.view,arch_db:stock_available_to_promise_release.view_picking_release_tree
+msgid "To"
+msgstr ""
 
 #. module: stock_available_to_promise_release
 #: model:ir.model,name:stock_available_to_promise_release.model_stock_picking
