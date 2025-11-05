@@ -11,4 +11,5 @@
     "maintainers": ["rousseldenis"],
     "website": "https://github.com/OCA/stock-logistics-reservation",
     "depends": ["stock_reserve_rule"],
+    "data": ["views/stock_removal_strategy.xml"],
 }

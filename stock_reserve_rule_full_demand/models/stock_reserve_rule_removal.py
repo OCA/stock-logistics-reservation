@@ -13,6 +13,17 @@ class StockReserveRuleRemoval(models.Model):
         ondelete={"full_demand": "set default"},
     )
 
+    full_demand_fallback_location_ids = fields.Many2many(
+        comodel_name="stock.location",
+        relation="stock_reserve_rule_removal_stock_location_rel",
+        column1="rule_id",
+        column2="location_id",
+        string="Full Demand Fallback Locations",
+        help="This is the locations where to check if products"
+        " are available to enable or not the full demand rule."
+        " Don't fill in this if you don't want fallback.",
+    )
+
     def _filter_quants(self, move, quants):
         """
         If the rule is "Full Demand" and if the available quantity
@@ -20,6 +31,25 @@ class StockReserveRuleRemoval(models.Model):
         """
         quants = super()._filter_quants(move, quants)
         if self.removal_strategy == "full_demand":
+            if self.full_demand_fallback_location_ids:
+                qty = sum(
+                    [
+                        move.product_id.with_context(
+                            location=location.id
+                        ).virtual_available
+                        for location in self.full_demand_fallback_location_ids
+                    ]
+                )
+                if (
+                    float_compare(
+                        qty,
+                        move.product_uom_qty,
+                        precision_rounding=move.product_id.uom_id.rounding,
+                    )
+                    > 0
+                ):
+                    return quants.browse()
+
             if (
                 float_compare(
                     sum(quant.available_quantity for quant in quants),
