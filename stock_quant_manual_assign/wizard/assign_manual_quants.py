@@ -5,7 +5,7 @@
 # Copyright 2018 Tecnativa - Pedro M. Baeza
 # License AGPL-3 - See http://www.gnu.org/licenses/agpl-3.0.html
 
-from odoo import Command, _, api, fields, models
+from odoo import Command, api, fields, models
 from odoo.exceptions import ValidationError
 from odoo.tools.float_utils import float_compare, float_is_zero
 
@@ -28,7 +28,9 @@ class AssignManualQuants(models.TransientModel):
                 )
                 > 0
             ):
-                raise ValidationError(_("Quantity is higher than the needed one"))
+                raise ValidationError(
+                    self.env._("Quantity is higher than the needed one")
+                )
 
     @api.depends("move_id", "quants_lines", "quants_lines.qty")
     def _compute_qties(self):
@@ -148,7 +150,7 @@ class AssignManualQuantsLines(models.TransientModel):
         store=True,
     )
     package_id = fields.Many2one(
-        comodel_name="stock.quant.package",
+        comodel_name="stock.package",
         string="Package",
         related="quant_id.package_id",
         store=True,
@@ -211,7 +213,7 @@ class AssignManualQuantsLines(models.TransientModel):
                 > 0
             ):
                 raise ValidationError(
-                    _(
+                    self.env._(
                         "Selected line quantity is higher than the available "
                         "one. Maybe an operation with this product has been "
                         "done meanwhile or you have manually increased the "

@@ -19,7 +19,8 @@ class TestStockQuantManualAssign(TransactionCase):
         cls.product = cls.env["product.product"].create(
             {"name": "Product 4 test", "type": "consu", "is_storable": True}
         )
-        cls.location_src = cls.env.ref("stock.stock_location_locations_virtual")
+        cls.warehouse = cls.env["stock.warehouse"].search([], limit=1)
+        cls.location_src = cls.warehouse.lot_stock_id
         cls.location_dst = cls.env.ref("stock.stock_location_customers")
         cls.picking_type_out = cls.ModelDataObj._xmlid_to_res_id(
             "stock.picking_type_out"
@@ -72,7 +73,6 @@ class TestStockQuantManualAssign(TransactionCase):
         )
         cls.move = cls.move_model.create(
             {
-                "name": cls.product.name,
                 "product_id": cls.product.id,
                 "product_uom_qty": 400.0,
                 "product_uom": cls.product.uom_id.id,
