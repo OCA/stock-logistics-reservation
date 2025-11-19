@@ -3,14 +3,21 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 from odoo import api, fields, models
+from odoo.exceptions import UserError
 
 
 class StockMoveForceReservation(models.TransientModel):
     _name = "stock.move.force.reservation"
+    _description = "stock move force reservation"
 
     picking_id = fields.Many2one(
         comodel_name="stock.picking",
         string="Current Transfer",
+        readonly=True,
+    )
+    location_id = fields.Many2one(
+        comodel_name="stock.location",
+        string="Source Location",
         readonly=True,
     )
     move_id = fields.Many2one(
@@ -24,6 +31,12 @@ class StockMoveForceReservation(models.TransientModel):
         readonly=True,
     )
 
+    move_to_unreserve_ids_domain = fields.Char(
+        compute="_compute_move_to_unreserve_ids_domain",
+        readonly=True,
+        store=False,
+    )
+
     move_to_unreserve_ids = fields.Many2many(
         comodel_name="stock.move",
         string="Moves To Unreserve",
@@ -31,16 +44,35 @@ class StockMoveForceReservation(models.TransientModel):
     )
     total_quantity = fields.Float(compute="_compute_total_quantity")
 
+    @api.depends("product_id", "move_id", "location_id")
+    def _compute_move_to_unreserve_ids_domain(self):
+        for rec in self:
+            rec.move_to_unreserve_ids_domain = [
+                ("id", "!=", rec.move_id.id),
+                ("product_id", "=", rec.product_id.id),
+                (
+                    "state",
+                    "in",
+                    ["assigned", "partially_available"],
+                ),
+                ("location_id", "child_of", rec.location_id.ids),
+                ("move_orig_ids", "=", False),
+            ]
+
     @api.model
     def default_get(self, fields_list):
         rec = super().default_get(fields_list)
         active_id = self.env.context.get("active_id", False)
-        stock_move = self.env["stock.move"].browse(active_id)
+        stock_move = self.env["stock.move"].browse(active_id).exists()
+        if not stock_move:
+            raise UserError(self.env._("No stock move available."))
+
         rec.update(
             {
                 "move_id": stock_move,
                 "product_id": stock_move.product_id,
                 "picking_id": stock_move.picking_id,
+                "location_id": stock_move.picking_id.location_id,
             }
         )
         return rec
@@ -52,22 +84,8 @@ class StockMoveForceReservation(models.TransientModel):
             total_quantity += record.product_uom_qty
         self.total_quantity = total_quantity
 
-    @api.onchange("move_id", "product_id")
-    def onchange_move_id(self):
-        if self.move_id and self.product_id:
-            warehouse_id = self.picking_id.location_id.get_warehouse()
-            move_ids = self.env["stock.move"].search(
-                [
-                    ("product_id", "=", self.product_id.id),
-                    ("state", "in", ["assigned", "partially_available"]),
-                    ("id", "!=", self.move_id.id),
-                    ("warehouse_id", "=", warehouse_id.id),
-                ]
-            )
-            domain = {"move_to_unreserve_ids": [("id", "in", move_ids.ids)]}
-            return {"domain": domain}
-
     def validate(self):
         moves_to_unreserve = self.move_to_unreserve_ids
         moves_to_unreserve._do_unreserve()
         self.picking_id.action_assign()
+        moves_to_unreserve._action_assign()
