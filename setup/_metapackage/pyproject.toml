@@ -1,7 +1,8 @@
 [project]
 name = "odoo-addons-oca-stock-logistics-reservation"
-version = "18.0.20251030.0"
+version = "18.0.20251128.0"
 dependencies = [
+    "odoo-addon-product_expiry_assign==18.0.*",
     "odoo-addon-sale_stock_available_to_promise_release==18.0.*",
     "odoo-addon-sale_stock_available_to_promise_release_dropshipping==18.0.*",
     "odoo-addon-stock_available_to_promise_release==18.0.*",
