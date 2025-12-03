@@ -28,7 +28,7 @@ addon | version | maintainers | summary
 [product_expiry_assign](product_expiry_assign/) | 18.0.1.0.0 |  | Force the reservation of expired lots.
 [sale_stock_available_to_promise_release](sale_stock_available_to_promise_release/) | 18.0.2.0.0 |  | Integration between Sales and Available to Promise Release
 [sale_stock_available_to_promise_release_dropshipping](sale_stock_available_to_promise_release_dropshipping/) | 18.0.1.0.0 |  | Glue module between sale_stock_available_to_promise_release and stock_dropshipping
-[stock_available_to_promise_release](stock_available_to_promise_release/) | 18.0.1.4.2 |  | Release Operations based on available to promise
+[stock_available_to_promise_release](stock_available_to_promise_release/) | 18.0.1.5.0 |  | Release Operations based on available to promise
 [stock_available_to_promise_release_carrier_alternative](stock_available_to_promise_release_carrier_alternative/) | 18.0.1.0.0 |  | Advanced selection of preferred shipping methods
 [stock_available_to_promise_release_dynamic_routing](stock_available_to_promise_release_dynamic_routing/) | 18.0.1.0.1 | <a href='https://github.com/jbaudoux'><img src='https://github.com/jbaudoux.png' width='32' height='32' style='border-radius:50%;' alt='jbaudoux'/></a> | Glue between moves release and dynamic routing
 [stock_available_to_promise_release_exclude_location](stock_available_to_promise_release_exclude_location/) | 18.0.1.0.0 |  | Exclude locations from available stock
