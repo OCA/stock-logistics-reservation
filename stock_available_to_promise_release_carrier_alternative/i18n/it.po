@@ -20,8 +20,10 @@ msgstr ""
 #: model:ir.model.fields,help:stock_available_to_promise_release_carrier_alternative.field_delivery_carrier__alternative_carrier_ids
 msgid ""
 "\n"
-"    Change delivery to one of those alternative carriers if the conditions are met.\n"
-"    Evaluated carriers are this carrier and those alternatives sorted by sequence.\n"
+"    Change delivery to one of those alternative carriers if the conditions "
+"are met.\n"
+"    Evaluated carriers are this carrier and those alternatives sorted by "
+"sequence.\n"
 "    The first valid carrier will be selected\n"
 msgstr ""
 "\n"
@@ -30,12 +32,6 @@ msgstr ""
 "    I corrieri valutati sono questo corriere e le alternative ordinate per "
 "sequenza.\n"
 "    Verrà selezionato il primo corriere valido.\n"
-
-#. module: stock_available_to_promise_release_carrier_alternative
-#. odoo-python
-#: code:addons/stock_available_to_promise_release_carrier_alternative/models/stock_picking.py:0
-msgid "%s - Alternative carrier %s"
-msgstr "%s - Corriere alternativo %s"
 
 #. module: stock_available_to_promise_release_carrier_alternative
 #: model:ir.model.fields,field_description:stock_available_to_promise_release_carrier_alternative.field_delivery_carrier__alternative_carrier_ids
@@ -66,3 +62,6 @@ msgstr "Movimento di magazzino"
 #: model:ir.model,name:stock_available_to_promise_release_carrier_alternative.model_stock_picking
 msgid "Transfer"
 msgstr "Trasferimento"
+
+#~ msgid "%s - Alternative carrier %s"
+#~ msgstr "%s - Corriere alternativo %s"
