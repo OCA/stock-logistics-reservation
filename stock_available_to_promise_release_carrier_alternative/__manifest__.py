@@ -12,7 +12,7 @@
     "installable": True,
     "depends": [
         "delivery_carrier_picking_valid",
-        "stock_available_to_promise_release",
+        "stock_available_to_promise_release_delivery",
         "delivery_procurement_group_carrier",
     ],
     "data": [
