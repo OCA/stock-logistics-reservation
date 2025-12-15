@@ -23,12 +23,6 @@ msgid ""
 msgstr ""
 
 #. module: stock_available_to_promise_release_carrier_alternative
-#. odoo-python
-#: code:addons/stock_available_to_promise_release_carrier_alternative/models/stock_picking.py:0
-msgid "%s - Alternative carrier %s"
-msgstr ""
-
-#. module: stock_available_to_promise_release_carrier_alternative
 #: model:ir.model.fields,field_description:stock_available_to_promise_release_carrier_alternative.field_delivery_carrier__alternative_carrier_ids
 msgid "Alternative Carrier"
 msgstr ""
