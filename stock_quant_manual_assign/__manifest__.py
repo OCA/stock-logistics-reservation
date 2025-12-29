@@ -7,8 +7,8 @@
 
 {
     "name": "Stock - Manual Quant Assignment",
-    "version": "17.0.1.1.0",
-    "category": "Warehouse",
+    "version": "18.0.1.1.0",
+    "category": "Reservation",
     "license": "AGPL-3",
     "author": "AvanzOSC, "
     "Tecnativa, "
