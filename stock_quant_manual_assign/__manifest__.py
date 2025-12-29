@@ -15,7 +15,7 @@
     "ForgeFlow, "
     "Fanha Giang, "
     "Odoo Community Association (OCA)",
-    "website": "https://github.com/OCA/stock-logistics-warehouse",
+    "website": "https://github.com/OCA/stock-logistics-reservation",
     "depends": ["stock"],
     "data": [
         "wizard/assign_manual_quants_view.xml",
