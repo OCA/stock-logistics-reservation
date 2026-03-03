@@ -14,6 +14,12 @@ class TestAvailableToPromiseRelease(PromiseReleaseCommonCase):
             lambda r: r.location_src_id == cls.loc_stock
         )
         delivery_pick_rule.group_propagation_option = "fixed"
+        delivery_pick_rule.group_id = cls.env["procurement.group"].create(
+            {
+                "name": "TEST",
+                "move_type": "direct",
+            }
+        )
         cls.pc1 = cls._create_picking_chain(
             cls.wh, [(cls.product1, 2)], date=datetime(2019, 9, 2, 16, 0)
         )
