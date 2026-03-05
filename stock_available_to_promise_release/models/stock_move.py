@@ -54,7 +54,7 @@ class StockMove(models.Model):
         compute="_compute_release_ready",
         search="_search_release_ready",
     )
-    need_release = fields.Boolean(index=True, copy=False)
+    need_release = fields.Boolean(index=True)
     unrelease_allowed = fields.Boolean(compute="_compute_unrelease_allowed")
 
     @api.depends("need_release", "rule_id", "rule_id.available_to_promise_defer_pull")
@@ -256,7 +256,7 @@ class StockMove(models.Model):
         if horizon_date:
             sql += (
                 " AND (m.need_release IS true AND m.date <= %(horizon)s "
-                "      OR m.need_release IS false)"
+                f"     OR ({self._previous_promised_qty_sql_moves_no_release()}))"
             )
             params["horizon"] = horizon_date
         return sql, params
@@ -497,15 +497,6 @@ class StockMove(models.Model):
 
     def release_available_to_promise(self):
         return self._run_stock_rule()
-
-    def _prepare_move_split_vals(self, qty):
-        vals = super()._prepare_move_split_vals(qty)
-        # The method set procure_method as 'make_to_stock' by default on split,
-        # but we want to keep 'make_to_order' for chained moves when we split
-        # a partially available move in _run_stock_rule().
-        if self.env.context.get("release_available_to_promise"):
-            vals.update({"procure_method": self.procure_method, "need_release": True})
-        return vals
 
     def _get_release_decimal_precision(self):
         return self.env["decimal.precision"].precision_get("Product Unit of Measure")
