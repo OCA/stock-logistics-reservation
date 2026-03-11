@@ -625,3 +625,46 @@ class TestReserveRule(ReserveRuleCommon):
             ],
         )
         picking.action_assign()
+
+    def test_move_reassign_partial(self):
+        self._create_rule(
+            {"force_reassign_partial": True},
+            [{"removal_strategy": "default", "location_id": self.wh.lot_stock_id.id}],
+        )
+        self.product1.tracking = "lot"
+        lot_1 = self.env["stock.lot"].create(
+            {
+                "name": "LOT-0001",
+                "product_id": self.product1.id,
+            }
+        )
+        lot_2 = self.env["stock.lot"].create(
+            {
+                "name": "LOT-0002",
+                "product_id": self.product1.id,
+            }
+        )
+        self.env["stock.quant"]._update_available_quantity(
+            self.product1, self.wh.lot_stock_id, 10, lot_id=lot_1
+        )
+        self.env["stock.quant"]._update_available_quantity(
+            self.product1, self.wh.lot_stock_id, 5, lot_id=lot_2
+        )
+        picking_1 = self._create_picking(self.wh, [(self.product1, 10)])
+        picking_2 = self._create_picking(self.wh, [(self.product1, 10)])
+        picking_1.action_assign()
+        self.assertEqual(picking_1.move_ids.state, "assigned")
+        self.assertEqual(picking_1.move_line_ids.lot_id, lot_1)
+
+        picking_2.action_assign()
+        self.assertEqual(picking_2.move_ids.state, "partially_available")
+        self.assertEqual(picking_2.move_line_ids.lot_id, lot_2)
+
+        picking_1.action_cancel()
+
+        self.env["stock.quant"]._update_available_quantity(
+            self.product1, self.wh.lot_stock_id, 10, lot_id=lot_2
+        )
+
+        picking_2.action_assign()
+        self.assertEqual(picking_2.move_line_ids.lot_id, lot_1)

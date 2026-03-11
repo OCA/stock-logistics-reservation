@@ -26,6 +26,7 @@
                                 widget="many2many_tags"
                                 options="{'no_create': 1}"
                             />
+                            <field name="force_reassign_partial" />
                             <field name="sequence" />
                         </group>
                         <group>
