@@ -127,3 +127,23 @@ class StockMove(models.Model):
             owner_id=owner_id,
             strict=strict,
         )
+
+    def _action_assign(self, force_qty=False):
+        unreserve_locations = {}
+        partially_assigned_moves = self.filtered(
+            lambda mov: mov.state == "partially_available"
+        )
+
+        for move in partially_assigned_moves:
+            to_unreserve = unreserve_locations.setdefault(
+                move.location_id.id,
+                any(
+                    rule.force_reassign_partial
+                    for rule in self.env["stock.reserve.rule"]._rules_for_location(
+                        move.location_id
+                    )
+                ),
+            )
+            if to_unreserve:
+                move.move_line_ids.unlink()
+        return super()._action_assign(force_qty=force_qty)

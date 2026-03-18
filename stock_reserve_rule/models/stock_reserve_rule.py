@@ -62,6 +62,11 @@ class StockReserveRule(models.Model):
         "rule is applicable or not.",
     )
 
+    force_reassign_partial = fields.Boolean(
+        help="Check this box if you want to remove existing reservation when checking "
+        "availabilty of partially available moves."
+    )
+
     def _rules_for_location(self, location):
         return self.search([("location_id", "parent_of", location.id)])
 
