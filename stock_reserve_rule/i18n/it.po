@@ -45,6 +45,13 @@ msgid "Archived"
 msgstr "In archivio"
 
 #. module: stock_reserve_rule
+#: model:ir.model.fields,help:stock_reserve_rule.field_stock_reserve_rule__force_reassign_partial
+msgid ""
+"Check this box if you want to remove existing reservation when checking "
+"availabilty of partially available moves."
+msgstr ""
+
+#. module: stock_reserve_rule
 #: model:ir.model.fields,field_description:stock_reserve_rule.field_stock_reserve_rule__company_id
 msgid "Company"
 msgstr "Azienda"
@@ -69,9 +76,11 @@ msgstr "Strategia di rimozione predefinita"
 #. module: stock_reserve_rule
 #: model:ir.model.fields,help:stock_reserve_rule.field_stock_reserve_rule_removal__removal_strategy
 msgid ""
-"Defines if and how goods are taken from locations.Default: take the first ones with the configured Removal Strategy(FIFO, FEFO, ...).\n"
+"Defines if and how goods are taken from locations.Default: take the first "
+"ones with the configured Removal Strategy(FIFO, FEFO, ...).\n"
 "Empty Bins: take goods from a location only if the bin is empty afterwards.\n"
-"Full Packaging: take goods from a location only if the location quantity matches a packaging quantity (do not open boxes)."
+"Full Packaging: take goods from a location only if the location quantity "
+"matches a packaging quantity (do not open boxes)."
 msgstr ""
 "Definisce se e come la merce è prelevata dalle ubicazioni. Predefinito: "
 "preleva seguendo la strategia di rimozione configurata (FIFO, FEFO, ...).\n"
@@ -115,6 +124,11 @@ msgstr ""
 "ubicazioni figlie."
 
 #. module: stock_reserve_rule
+#: model:ir.model.fields,field_description:stock_reserve_rule.field_stock_reserve_rule__force_reassign_partial
+msgid "Force Reassign Partial"
+msgstr ""
+
+#. module: stock_reserve_rule
 #: model:ir.model.fields.selection,name:stock_reserve_rule.selection__stock_reserve_rule_removal__removal_strategy__packaging
 msgid "Full Packaging"
 msgstr "Intero imballaggio"
@@ -129,12 +143,6 @@ msgstr "Calzini mattacchioni"
 #: model:ir.model.fields,field_description:stock_reserve_rule.field_stock_reserve_rule_removal__id
 msgid "ID"
 msgstr "ID"
-
-#. module: stock_reserve_rule
-#: model:ir.model.fields,field_description:stock_reserve_rule.field_stock_reserve_rule____last_update
-#: model:ir.model.fields,field_description:stock_reserve_rule.field_stock_reserve_rule_removal____last_update
-msgid "Last Modified on"
-msgstr "Ultima modifica il"
 
 #. module: stock_reserve_rule
 #: model:ir.model.fields,field_description:stock_reserve_rule.field_stock_reserve_rule__write_uid
@@ -197,7 +205,6 @@ msgstr "Regole di rimozione"
 #. module: stock_reserve_rule
 #. odoo-python
 #: code:addons/stock_reserve_rule/models/stock_reserve_rule.py:0
-#, python-format
 msgid ""
 "Removal rule '%(removal_name)s' location has to be a child of the rule "
 "location '%(child_rule)s'."
@@ -267,3 +274,6 @@ msgstr "Regola prenotazione magazzino"
 #: model:ir.model,name:stock_reserve_rule.model_stock_reserve_rule_removal
 msgid "Stock Reservation Rule Removal"
 msgstr "Regola rimozione prenotazione magazzino"
+
+#~ msgid "Last Modified on"
+#~ msgstr "Ultima modifica il"
