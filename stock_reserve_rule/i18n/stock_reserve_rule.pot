@@ -40,6 +40,13 @@ msgid "Archived"
 msgstr ""
 
 #. module: stock_reserve_rule
+#: model:ir.model.fields,help:stock_reserve_rule.field_stock_reserve_rule__force_reassign_partial
+msgid ""
+"Check this box if you want to remove existing reservation when checking "
+"availabilty of partially available moves."
+msgstr ""
+
+#. module: stock_reserve_rule
 #: model:ir.model.fields,field_description:stock_reserve_rule.field_stock_reserve_rule__company_id
 msgid "Company"
 msgstr ""
@@ -96,6 +103,11 @@ msgstr ""
 #: model:ir.model.fields,help:stock_reserve_rule.field_stock_reserve_rule_removal__quant_domain
 msgid ""
 "Filter Quants allowed to be reserved for this location and sub-locations."
+msgstr ""
+
+#. module: stock_reserve_rule
+#: model:ir.model.fields,field_description:stock_reserve_rule.field_stock_reserve_rule__force_reassign_partial
+msgid "Force Reassign Partial"
 msgstr ""
 
 #. module: stock_reserve_rule
