@@ -48,6 +48,7 @@ msgstr ""
 
 #. module: stock_available_to_promise_release
 #: model:ir.model.fields,help:stock_available_to_promise_release.field_stock_move__ordered_available_to_promise_qty
+#: model:ir.model.fields,help:stock_available_to_promise_release.field_stock_reservation__ordered_available_to_promise_qty
 msgid ""
 "Available to Promise quantity minus quantities promised  to moves with "
 "higher priority (in default UoM of the product)."
@@ -55,6 +56,7 @@ msgstr ""
 
 #. module: stock_available_to_promise_release
 #: model:ir.model.fields,help:stock_available_to_promise_release.field_stock_move__ordered_available_to_promise_uom_qty
+#: model:ir.model.fields,help:stock_available_to_promise_release.field_stock_reservation__ordered_available_to_promise_uom_qty
 msgid ""
 "Available to Promise quantity minus quantities promised  to moves with "
 "higher priority (in initial demand's UoM)."
@@ -125,6 +127,7 @@ msgstr ""
 #. module: stock_available_to_promise_release
 #: model:ir.model.fields,help:stock_available_to_promise_release.field_stock_move__date_priority
 #: model:ir.model.fields,help:stock_available_to_promise_release.field_stock_picking__date_priority
+#: model:ir.model.fields,help:stock_available_to_promise_release.field_stock_reservation__date_priority
 msgid ""
 "Date/time used to sort moves to deliver first. Used to calculate the ordered"
 " available to promise."
@@ -229,6 +232,7 @@ msgstr ""
 #. module: stock_available_to_promise_release
 #: model:ir.model.fields,field_description:stock_available_to_promise_release.field_stock_move__need_release
 #: model:ir.model.fields,field_description:stock_available_to_promise_release.field_stock_picking__need_release
+#: model:ir.model.fields,field_description:stock_available_to_promise_release.field_stock_reservation__need_release
 msgid "Need Release"
 msgstr ""
 
@@ -245,11 +249,13 @@ msgstr ""
 
 #. module: stock_available_to_promise_release
 #: model:ir.model.fields,field_description:stock_available_to_promise_release.field_stock_move__ordered_available_to_promise_uom_qty
+#: model:ir.model.fields,field_description:stock_available_to_promise_release.field_stock_reservation__ordered_available_to_promise_uom_qty
 msgid "Ordered Available to Promise"
 msgstr ""
 
 #. module: stock_available_to_promise_release
 #: model:ir.model.fields,field_description:stock_available_to_promise_release.field_stock_move__ordered_available_to_promise_qty
+#: model:ir.model.fields,field_description:stock_available_to_promise_release.field_stock_reservation__ordered_available_to_promise_qty
 msgid "Ordered Available to Promise (Real Qty)"
 msgstr ""
 
@@ -271,6 +277,7 @@ msgstr ""
 #. module: stock_available_to_promise_release
 #: model:ir.model.fields,field_description:stock_available_to_promise_release.field_stock_move__date_priority
 #: model:ir.model.fields,field_description:stock_available_to_promise_release.field_stock_picking__date_priority
+#: model:ir.model.fields,field_description:stock_available_to_promise_release.field_stock_reservation__date_priority
 msgid "Priority Date"
 msgstr ""
 
@@ -286,6 +293,7 @@ msgstr ""
 
 #. module: stock_available_to_promise_release
 #: model:ir.model.fields,help:stock_available_to_promise_release.field_stock_move__previous_promised_qty
+#: model:ir.model.fields,help:stock_available_to_promise_release.field_stock_reservation__previous_promised_qty
 msgid ""
 "Quantities promised to moves with higher priority than this move (in default"
 " UoM of the product)."
@@ -293,6 +301,7 @@ msgstr ""
 
 #. module: stock_available_to_promise_release
 #: model:ir.model.fields,field_description:stock_available_to_promise_release.field_stock_move__previous_promised_qty
+#: model:ir.model.fields,field_description:stock_available_to_promise_release.field_stock_reservation__previous_promised_qty
 msgid "Quantity Promised before this move"
 msgstr ""
 
@@ -315,6 +324,7 @@ msgstr ""
 #. module: stock_available_to_promise_release
 #: model:ir.model.fields,field_description:stock_available_to_promise_release.field_stock_move__release_ready
 #: model:ir.model.fields,field_description:stock_available_to_promise_release.field_stock_picking__release_ready
+#: model:ir.model.fields,field_description:stock_available_to_promise_release.field_stock_reservation__release_ready
 #: model_terms:ir.ui.view,arch_db:stock_available_to_promise_release.view_move_release_search
 #: model_terms:ir.ui.view,arch_db:stock_available_to_promise_release.view_picking_release_search
 msgid "Release Ready"
@@ -459,6 +469,7 @@ msgstr ""
 
 #. module: stock_available_to_promise_release
 #: model:ir.model.fields,field_description:stock_available_to_promise_release.field_stock_move__unrelease_allowed
+#: model:ir.model.fields,field_description:stock_available_to_promise_release.field_stock_reservation__unrelease_allowed
 msgid "Unrelease Allowed"
 msgstr ""
 
