@@ -40,6 +40,7 @@ msgstr ""
 
 #. module: sale_stock_available_to_promise_release
 #: model:ir.model.fields,field_description:sale_stock_available_to_promise_release.field_stock_move__carrier_id
+#: model:ir.model.fields,field_description:sale_stock_available_to_promise_release.field_stock_reservation__carrier_id
 #: model_terms:ir.ui.view,arch_db:sale_stock_available_to_promise_release.view_picking_release_search
 msgid "Carrier"
 msgstr ""
