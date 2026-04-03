@@ -569,8 +569,7 @@ class StockMove(models.Model):
             )
         self.env["procurement.group"].run_defer(procurement_requests)
 
-        assigned_moves = released_moves._after_release_assign_moves()
-        assigned_moves._after_release_update_chain()
+        released_moves._after_release_update_chain()
 
         # some moves may have been already released but not merged because of
         # an ongoing quantity on the pick step. Now that both are released, try
@@ -581,7 +580,7 @@ class StockMove(models.Model):
         if prereleased_moves:
             prereleased_moves._merge_moves()
 
-        return assigned_moves
+        return released_moves
 
     def _before_release(self):
         """Hook that aims to be overridden.
@@ -609,8 +608,14 @@ class StockMove(models.Model):
                 move.date = expected_date
 
     def _after_release_update_chain(self):
+        move_ids = []
+        for origin_moves in self._get_chained_moves_iterator("move_orig_ids"):
+            move_ids += origin_moves.filtered(
+                lambda m: m.state not in ("cancel", "done")
+            ).ids
+        moves = self.browse(move_ids)
+
         picking_ids = set()
-        moves = self
         while moves:
             picking_ids.update(moves.picking_id.ids)
             moves = moves.move_orig_ids
@@ -624,16 +629,6 @@ class StockMove(models.Model):
         priorities = pickings.mapped("priority")
         if priorities:
             pickings.write({"priority": max(priorities)})
-
-    def _after_release_assign_moves(self):
-        move_ids = []
-        for origin_moves in self._get_chained_moves_iterator("move_orig_ids"):
-            move_ids += origin_moves.filtered(
-                lambda m: m.state not in ("cancel", "done")
-            ).ids
-        moves = self.browse(move_ids)
-        moves._action_assign()
-        return moves
 
     def _release_split(self, remaining_qty):
         """Split move and put remaining_qty to a backorder move."""
