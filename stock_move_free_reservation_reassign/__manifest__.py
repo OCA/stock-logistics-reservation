@@ -6,10 +6,10 @@
     "summary": """
         Try to reassign a move when its reservation is removed due to the
         related quant becoming unavailable""",
-    "version": "16.0.1.0.1",
+    "version": "18.0.1.0.0",
     "license": "AGPL-3",
     "author": "ACSONE SA/NV,Odoo Community Association (OCA)",
-    "website": "https://github.com/OCA/stock-logistics-workflow",
+    "website": "https://github.com/OCA/stock-logistics-reservation",
     "depends": [
         "stock",
     ],
