@@ -23,11 +23,11 @@
                 </field>
                 <footer>
                     <button
-                        string="Confirm Cancellation"
-                        name="button_release"
-                        type="object"
-                        class="btn-primary"
-                    />
+                    string="Confirm Cancellation"
+                    name="button_release"
+                    type="object"
+                    class="btn-primary"
+                />
                     or
                     <button special="cancel" class="oe_link" string="Discard" />
                 </footer>
