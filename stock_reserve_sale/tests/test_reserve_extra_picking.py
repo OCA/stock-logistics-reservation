@@ -1,12 +1,12 @@
 # © 2023 FactorLibre - Hugo Córdoba <hugo.cordoba@factorlibre.com>
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
-from odoo.tests.common import Form
+from odoo.tests import Form
 
-from .common import TestReserveExtraPickingCommon
+from .common import TestStockReserveSaleCommon
 
 
-class TestReserveExtraPicking(TestReserveExtraPickingCommon):
+class TestReserveExtraPicking(TestStockReserveSaleCommon):
     def test_00_reserves_count(self):
         """
         This test checks that the calculation of the reserved lines counter is correct

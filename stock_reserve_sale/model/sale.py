@@ -2,6 +2,7 @@
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 from odoo import api, fields, models
 from odoo.exceptions import UserError
+from odoo.fields import Command
 from odoo.tools.translate import _
 
 _LINE_KEYS = ["product_id", "product_uom_qty"]
@@ -55,8 +56,7 @@ class SaleOrder(models.Model):
     )
 
     def release_all_stock_reservation(self):
-        lines = self.mapped("order_line")
-        lines.release_stock_reservation()
+        self.order_line.release_stock_reservation()
         return True
 
     def action_open_release_reservation_wizard(self):
@@ -65,12 +65,10 @@ class SaleOrder(models.Model):
             {
                 "sale_order_id": self.id,
                 "reservation_ids": [
-                    (
-                        6,
-                        0,
+                    Command.set(
                         self.stock_reservation_ids.filtered(
                             lambda r: r.state != "cancel"
-                        ).ids,
+                        ).ids
                     )
                 ],
             }
@@ -83,11 +81,11 @@ class SaleOrder(models.Model):
             "target": "new",
         }
 
-    @api.depends("stock_reservation_ids", "order_line.product_id.detailed_type")
+    @api.depends("stock_reservation_ids", "order_line.product_id.type")
     def _compute_reserves_count(self):
         for order in self:
             lines = order.order_line.filtered(
-                lambda ln: ln.product_id.detailed_type != "service"
+                lambda ln: ln.product_id.type != "service"
             )
             reserves_count = len(order.stock_reservation_ids)
             order.reserves_count = reserves_count
@@ -110,20 +108,24 @@ class SaleOrder(models.Model):
         return super().action_cancel()
 
     def write(self, vals):
-        old_lines = self.mapped("order_line")
-        dict_old_lines = {}
-        for line in old_lines:
-            dict_old_lines[line.id] = {
+        dict_old_lines = {
+            line.id: {
                 "product_id": line.product_id,
                 "product_uom_qty": line.product_uom_qty,
             }
+            for line in self.order_line
+        }
         res = super().write(vals)
         for order in self:
             body = ""
-            for line in vals.get("order_line", []):
-                if line[0] == 1 and list(set(line[2].keys()).intersection(_LINE_KEYS)):
-                    body += order.get_message(dict_old_lines.get(line[1]), line[2])
-            if body != "":
+            for command in vals.get("order_line", []):
+                if command[0] == Command.UPDATE and set(command[2]).intersection(
+                    _LINE_KEYS
+                ):
+                    body += order.get_message(
+                        dict_old_lines.get(command[1]), command[2]
+                    )
+            if body:
                 order.message_post(body=body)
         return res
 

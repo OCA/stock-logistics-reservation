@@ -48,11 +48,8 @@ class SaleStockReserve(models.TransientModel):
         )._default_picking_type_id()
         location_id = self.location_id.id
         if picking_type_id and not location_id:
-            picking = self.env["stock.picking"].new(
-                {"picking_type_id": picking_type_id}
-            )
-            picking.onchange_picking_type()
-            location_id = picking.location_id.id
+            picking_type = self.env["stock.picking.type"].browse(picking_type_id)
+            location_id = picking_type.default_location_src_id.id
         location_dest_id = (
             self.location_dest_id.id or reservation_env._default_location_dest_id()
         )

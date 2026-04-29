@@ -1,42 +1,12 @@
 # Copyright 2021 Tecnativa - Carlos Roca
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 from odoo.exceptions import UserError
-from odoo.tests import Form, common
+from odoo.tests import Form
+
+from .common import TestStockReserveSaleCommon
 
 
-class TestStockReserveSale(common.TransactionCase):
-    @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
-        partner_form = Form(cls.env["res.partner"])
-        partner_form.name = "Test partner"
-        partner_form.country_id = cls.env.ref("base.es")
-        cls.partner = partner_form.save()
-        warehouse_form = Form(cls.env["stock.warehouse"])
-        warehouse_form.name = "Test warehouse"
-        warehouse_form.code = "TEST"
-        cls.warehouse = warehouse_form.save()
-        cls.product_1 = cls.env["product.product"].create(
-            [{"name": "Test Product 1", "type": "product"}]
-        )
-        cls.product_2 = cls.env["product.product"].create(
-            [{"name": "Test Product 2", "type": "product"}]
-        )
-        cls.env["stock.quant"].create(
-            {
-                "product_id": cls.product_1.id,
-                "location_id": cls.warehouse.lot_stock_id.id,
-                "quantity": 10.0,
-            }
-        )
-        cls.env["stock.quant"].create(
-            {
-                "product_id": cls.product_2.id,
-                "location_id": cls.warehouse.lot_stock_id.id,
-                "quantity": 10.0,
-            }
-        )
-
+class TestStockReserveSale(TestStockReserveSaleCommon):
     def test_reserve_01_tree_reserve_release(self):
         sale_order_form = Form(self.env["sale.order"])
         sale_order_form.partner_id = self.partner
