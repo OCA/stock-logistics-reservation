@@ -37,7 +37,7 @@ addon | version | maintainers | summary
 [stock_move_auto_assign](stock_move_auto_assign/) | 18.0.1.0.1 |  | Try to reserve moves when goods enter in a location
 [stock_picking_unreserve_button](stock_picking_unreserve_button/) | 18.0.1.0.0 |  | Stock Picking Unreserve Button
 [stock_reserve](stock_reserve/) | 18.0.1.0.0 |  | Stock reservations on products
-[stock_reserve_rule](stock_reserve_rule/) | 18.0.1.2.0 |  | Configure reservation rules by location
+[stock_reserve_rule](stock_reserve_rule/) | 18.0.1.2.1 |  | Configure reservation rules by location
 [stock_rule_reserve_max_quantity](stock_rule_reserve_max_quantity/) | 18.0.1.0.1 | <a href='https://github.com/Shide'><img src='https://github.com/Shide.png' width='32' height='32' style='border-radius:50%;' alt='Shide'/></a> <a href='https://github.com/rafaelbn'><img src='https://github.com/rafaelbn.png' width='32' height='32' style='border-radius:50%;' alt='rafaelbn'/></a> | Allows to reserve max available quantity when a move comes from an stock rule
 
 [//]: # (end addons)
