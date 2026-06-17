@@ -60,6 +60,10 @@ class AssignManualQuants(models.TransientModel):
 
     def assign_quants(self):
         move = self.move_id
+        # In Odoo 18, _do_unreserve() skips moves where move.picked=True.
+        # Reset picked on move lines so unreserve can clear them before re-assigning.
+        if move.picked:
+            move.move_line_ids.picked = False
         move._do_unreserve()
         for line in self.quants_lines:
             line._assign_quant_line()
