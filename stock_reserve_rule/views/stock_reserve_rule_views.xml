@@ -27,6 +27,7 @@
                                 options="{'no_create': 1}"
                             />
                             <field name="force_reassign_partial" />
+                            <field name="strict_packaging_qty_match" />
                             <field name="sequence" />
                         </group>
                         <group>

@@ -66,6 +66,10 @@ class StockReserveRule(models.Model):
         help="Check this box if you want to remove existing reservation when checking "
         "availabilty of partially available moves."
     )
+    strict_packaging_qty_match = fields.Boolean(
+        help="Check this box if you want to reserve only a quant whose available "
+        "quantity is bigger than the requested packaging."
+    )
 
     def _rules_for_location(self, location):
         return self.search([("location_id", "parent_of", location.id)])
@@ -176,7 +180,16 @@ class StockReserveRuleRemoval(models.Model):
     def _filter_quants(self, move, quants):
         domain = safe_eval(self.quant_domain) or []
         if domain:
-            return self._eval_quant_domain(quants, domain)
+            quants = self._eval_quant_domain(quants, domain)
+        if self.rule_id.strict_packaging_qty_match:
+            quants = quants.filtered(
+                lambda qu: float_compare(
+                    qu.available_quantity,
+                    move.product_packaging_id.qty,
+                    precision_rounding=move.product_uom.rounding,
+                )
+                >= 0
+            )
         return quants
 
     def _apply_strategy(self, quants):
