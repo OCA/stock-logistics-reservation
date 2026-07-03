@@ -54,7 +54,6 @@
                                     class="oe_inline"
                                 />
                             </div>
-                            <field name="product_uom_category_id" invisible="1" />
                             <field name="name" />
                             <field name="date_validity" />
                             <field name="create_date" groups="base.group_no_one" />
@@ -119,6 +118,10 @@
         <field name="model">stock.reservation</field>
         <field name="arch" type="xml">
             <search string="Stock Reservations">
+                <field name="name" />
+                <field name="product_id" />
+                <field name="move_id" />
+                <field name="restrict_partner_id" groups="stock.group_tracking_owner" />
                 <filter
                     name="draft"
                     string="Draft"
@@ -143,11 +146,7 @@
                     domain="[('state', '=', 'cancel')]"
                     help="Reservations have been released."
                 />
-                <field name="name" />
-                <field name="product_id" />
-                <field name="move_id" />
-                <field name="restrict_partner_id" groups="stock.group_tracking_owner" />
-                <group expand="0" string="Group By...">
+                <group>
                     <filter
                         string="Status"
                         name="groupby_state"

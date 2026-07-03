@@ -40,8 +40,12 @@ class ProductProduct(models.Model):
 
     def _compute_reservation_count(self):
         for product in self:
+            product_id = product._origin.id
+            if not product_id:
+                product.reservation_count = 0.0
+                continue
             domain = [
-                ("product_id", "=", product.id),
+                ("product_id", "=", product_id),
                 ("state", "in", ["draft", "assigned"]),
             ]
             reservations = self.env["stock.reservation"].search(domain)

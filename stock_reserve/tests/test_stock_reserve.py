@@ -57,8 +57,7 @@ class TestStockReserve(BaseCommon):
         reservation_1.reserve()
         self.assertFalse(reservation_1.picking_id)
         self.assertEqual(self.product.virtual_available, 4)
-        cron = self.env.ref("stock_reserve.ir_cron_release_stock_reservation")
-        cron.method_direct_trigger()
+        self.env["stock.reservation"].release_validity_exceeded()
         self.assertEqual(self.product.virtual_available, 10)
 
     def test_cron_reserve(self):
@@ -73,7 +72,6 @@ class TestStockReserve(BaseCommon):
                 "quantity": 10.0,
             }
         )
-        cron = self.env.ref("stock_reserve.ir_cron_reserve_waiting_confirmed")
-        cron.method_direct_trigger()
+        self.env["stock.reservation"].assign_waiting_confirmed_reserve_moves()
         self.assertEqual(reservation_1.state, "assigned")
         self.assertEqual(self.product.virtual_available, 9)
