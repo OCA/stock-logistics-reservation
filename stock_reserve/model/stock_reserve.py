@@ -3,7 +3,6 @@
 from odoo import api, fields, models
 from odoo.exceptions import UserError
 from odoo.tools import float_compare
-from odoo.tools.translate import _
 
 
 class StockReservation(models.Model):
@@ -33,6 +32,7 @@ class StockReservation(models.Model):
     _description = "Stock Reservation"
     _inherits = {"stock.move": "move_id"}
 
+    name = fields.Char(string="Description", required=True)
     note = fields.Text(string="Notes")
     move_id = fields.Many2one(
         "stock.move",
@@ -146,7 +146,7 @@ class StockReservation(models.Model):
     def release_validity_exceeded(self, ids=None):
         """Release all the reservation having an exceeded validity date"""
         domain = [
-            ("date_validity", "<", fields.date.today()),
+            ("date_validity", "<", fields.Date.today()),
             ("state", "!=", "cancel"),
         ]
         if ids:
@@ -164,10 +164,10 @@ class StockReservation(models.Model):
         """set product_uom and name from product onchange"""
         # save value before reading of self.move_id as this last one erase
         # product_id value
-        self.move_id.product_id = self.product_id
-        self.move_id._onchange_product_id()
-        self.name = self.move_id.name
-        self.product_uom = self.move_id.product_uom
+        self.move_id.product_id = self.product_id._origin or self.product_id
+        if self.product_id:
+            self.name = self.product_id.display_name
+            self.product_uom = self.product_id.uom_id
 
     @api.onchange("product_uom_qty")
     def _onchange_quantity(self):
@@ -180,7 +180,7 @@ class StockReservation(models.Model):
         action_dict = self.env["ir.actions.act_window"]._for_xml_id(
             "stock.stock_move_action"
         )
-        action_dict["name"] = _("Reservation Move")
+        action_dict["name"] = self.env._("Reservation Move")
         # open directly in the form view
         view_id = self.env.ref("stock.view_move_form").id
         action_dict.update(
@@ -207,7 +207,7 @@ class StockReservation(models.Model):
         return [
             ("state", "in", ["confirmed", "waiting", "partially_available"]),
             "|",
-            ("date_validity", ">=", fields.date.today()),
+            ("date_validity", ">=", fields.Date.today()),
             ("date_validity", "=", False),
         ]
 
