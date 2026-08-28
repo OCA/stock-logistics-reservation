@@ -241,6 +241,33 @@ class TestReserveRule(ReserveRuleCommon):
         )
         self.assertEqual(move.state, "assigned")
 
+    def test_quant_domain_same_location(self):
+        package = self.env["stock.quant.package"].create({})
+        self._update_qty_in_location(
+            self.loc_zone1_bin1, self.product1, 1, package=package
+        )
+        self._update_qty_in_location(self.loc_zone1_bin1, self.product1, 1)
+        picking = self._create_picking(self.wh, [(self.product1, 1)])
+
+        domain = [("package_id", "=", False)]
+        self._create_rule(
+            {},
+            [
+                # This rule is not excluded by the domain,
+                # but the quant will be as the quantity is less than 200.
+                {
+                    "location_id": self.loc_zone1.id,
+                    "sequence": 1,
+                    "quant_domain": domain,
+                },
+            ],
+        )
+        picking.action_assign()
+        move = picking.move_ids
+        ml = move.move_line_ids
+        self.assertTrue(ml)
+        self.assertFalse(ml.package_id)
+
     def test_rule_empty_bin(self):
         self._update_qty_in_location(self.loc_zone1_bin1, self.product1, 300)
         self._update_qty_in_location(self.loc_zone1_bin2, self.product1, 150)
