@@ -57,9 +57,19 @@ class StockMove(models.Model):
                 ):
                     continue
 
+                # The removal rule location can also be a parent of the move's
+                # source location (e.g. removal rule on "Stock" for a move from
+                # "Stock/Zone1/A"). In this case, the quants must be gathered
+                # from the move's source location, otherwise quants located in
+                # sibling locations (e.g. "Stock/Zone2") would be reserved as
+                # well, which is not allowed.
+                gather_location = removal_rule.location_id
+                if not gather_location.is_sublocation_of(location_id):
+                    gather_location = location_id
+
                 quants = self.env["stock.quant"]._gather(
                     self.product_id,
-                    removal_rule.location_id,
+                    gather_location,
                     lot_id=lot_id,
                     package_id=forced_package_id,
                     owner_id=owner_id,
