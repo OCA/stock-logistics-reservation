@@ -722,3 +722,30 @@ class TestReserveRule(ReserveRuleCommon):
         picking_2.move_line_ids.picked = False
         picking_2.action_assign()
         self.assertEqual(picking_2.move_line_ids.lot_id, lot_1)
+
+    def test_rule_removal_location_parent_of_move_location(self):
+        """A removal rule on a parent of the move's location must not
+        reserve quants of sibling locations.
+        """
+        self._update_qty_in_location(self.loc_zone1_bin1, self.product1, 100)
+        self._update_qty_in_location(self.loc_zone1_bin2, self.product1, 100)
+
+        # source location is a child of the removal rule location
+        picking = self._create_picking(
+            self.wh, [(self.product1, 150)], self.loc_zone1_bin1.id
+        )
+
+        self._create_rule(
+            {},
+            [{"location_id": self.loc_zone1.id, "sequence": 1}],
+        )
+
+        picking.action_assign()
+        move = picking.move_ids
+        # only the quants of the move's location can be reserved, even if
+        # the removal rule is defined on its parent location
+        self.assertRecordValues(
+            move.move_line_ids,
+            [{"location_id": self.loc_zone1_bin1.id, "quantity": 100.0}],
+        )
+        self.assertEqual(move.state, "partially_available")
