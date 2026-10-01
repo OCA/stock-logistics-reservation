@@ -4,7 +4,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 16.0\n"
+"Project-Id-Version: Odoo Server 18.0\n"
 "Report-Msgid-Bugs-To: \n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -12,13 +12,6 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: \n"
-
-#. module: stock_move_free_reservation_reassign
-#: model:ir.model.fields,field_description:stock_move_free_reservation_reassign.field_res_config_settings__reassign_stock_move_after_free_reservation
-msgid ""
-"Automatically reassign stock move after free reservation due to inventory "
-"adjustment"
-msgstr ""
 
 #. module: stock_move_free_reservation_reassign
 #: model:ir.model,name:stock_move_free_reservation_reassign.model_res_config_settings
@@ -36,8 +29,13 @@ msgid "Quants"
 msgstr ""
 
 #. module: stock_move_free_reservation_reassign
+#: model:ir.model.fields,field_description:stock_move_free_reservation_reassign.field_res_config_settings__reassign_stock_move_after_free_reservation
+msgid "Reassign moves unreserved by inventories"
+msgstr ""
+
+#. module: stock_move_free_reservation_reassign
 #: model_terms:ir.ui.view,arch_db:stock_move_free_reservation_reassign.res_config_settings_view_form
 msgid ""
-"Try to automatically reassign stock moves after a free reservation\n"
-"                due to an inventory adjustment."
+"Try to automatically reassign stock moves after a free reservation due to an"
+" inventory adjustment."
 msgstr ""
