@@ -35,6 +35,7 @@ addon | version | maintainers | summary
 [stock_available_to_promise_release_dynamic_routing](stock_available_to_promise_release_dynamic_routing/) | 18.0.1.0.1 | <a href='https://github.com/jbaudoux'><img src='https://github.com/jbaudoux.png' width='32' height='32' style='border-radius:50%;' alt='jbaudoux'/></a> | Glue between moves release and dynamic routing
 [stock_available_to_promise_release_exclude_location](stock_available_to_promise_release_exclude_location/) | 18.0.1.0.0 |  | Exclude locations from available stock
 [stock_move_auto_assign](stock_move_auto_assign/) | 18.0.1.0.1 |  | Try to reserve moves when goods enter in a location
+[stock_move_free_reservation_reassign](stock_move_free_reservation_reassign/) | 18.0.1.0.0 |  | Try to reassign a move when its reservation is removed due to the related quant becoming unavailable
 [stock_picking_unreserve_button](stock_picking_unreserve_button/) | 18.0.1.0.0 |  | Stock Picking Unreserve Button
 [stock_quant_manual_assign](stock_quant_manual_assign/) | 18.0.1.1.2 |  | Stock - Manual Quant Assignment
 [stock_reserve](stock_reserve/) | 18.0.1.0.0 |  | Stock reservations on products
