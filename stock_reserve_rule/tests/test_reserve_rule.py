@@ -610,6 +610,57 @@ class TestReserveRule(ReserveRuleCommon):
         )
         self.assertEqual(move.state, "assigned")
 
+    def test_rule_strict_packaging_qty_match(self):
+        self._setup_packagings(
+            self.product1,
+            [
+                ("Pallet", 500, self.pallet),
+                ("Transport Box", 100, self.transport_box),
+                ("Retail Box", 50, self.retail_box),
+            ],
+        )
+        packs = self.env["stock.quant.package"].browse()
+        for cnt in range(5):
+            pack = self.env["stock.quant.package"].create({"name": "PACK000%s" % cnt})
+            self._update_qty_in_location(
+                self.loc_zone1_bin1,
+                self.product1,
+                50,
+                package=pack,
+            )
+
+        picking = self._create_picking(self.wh, [(self.product1, 200)])
+        transport_packaging = self.env["product.packaging"].search(
+            [
+                ("product_id", "=", self.product1.id),
+                ("packaging_level_id", "=", self.transport_box.id),
+            ]
+        )
+        move = picking.move_ids
+        move.product_packaging_id = transport_packaging
+        self.assertEqual(move.state, "confirmed")
+        picking.action_assign()
+        self.assertEqual(move.state, "assigned")
+        picking.do_unreserve()
+        self.assertEqual(move.state, "confirmed")
+        self._create_rule(
+            {"strict_packaging_qty_match": True},
+            [
+                {"location_id": self.loc_zone1.id, "sequence": 1},
+            ],
+        )
+        picking.action_assign()
+        self.assertEqual(move.state, "confirmed")
+        pack = self.env["stock.quant.package"].create({"name": "PACK0006"})
+        self._update_qty_in_location(
+            self.loc_zone1_bin1,
+            self.product1,
+            250,
+            package=pack,
+        )
+        picking.action_assign()
+        self.assertEqual(move.state, "assigned")
+
     def test_rule_excluded_not_child_location(self):
         self._update_qty_in_location(self.loc_zone1_bin1, self.product1, 100)
         self._update_qty_in_location(self.loc_zone1_bin2, self.product1, 100)
