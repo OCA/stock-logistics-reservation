@@ -115,6 +115,10 @@ Contributors
 
   - Hugo Córdoba
 
+- `ForgeFlow <https://www.forgeflow.com>`__:
+
+  - Guillermo Navas
+
 Maintainers
 -----------
 

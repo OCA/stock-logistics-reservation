@@ -12,15 +12,14 @@ class TestStockReserveSale(common.TransactionCase):
         partner_form.name = "Test partner"
         partner_form.country_id = cls.env.ref("base.es")
         cls.partner = partner_form.save()
-        warehouse_form = Form(cls.env["stock.warehouse"])
-        warehouse_form.name = "Test warehouse"
-        warehouse_form.code = "TEST"
-        cls.warehouse = warehouse_form.save()
+        cls.warehouse = cls.env["stock.warehouse"].create(
+            {"name": "Test warehouse", "code": "TEST"}
+        )
         cls.product_1 = cls.env["product.product"].create(
-            [{"name": "Test Product 1", "type": "product"}]
+            [{"name": "Test Product 1", "type": "consu", "is_storable": True}]
         )
         cls.product_2 = cls.env["product.product"].create(
-            [{"name": "Test Product 2", "type": "product"}]
+            [{"name": "Test Product 2", "type": "consu", "is_storable": True}]
         )
         cls.env["stock.quant"].create(
             {

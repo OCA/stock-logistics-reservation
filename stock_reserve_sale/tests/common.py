@@ -10,7 +10,9 @@ class TestReserveExtraPickingCommon(TransactionCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.partner = cls.env["res.partner"].create({"name": "Bernard Perdant"})
-        cls.product = cls.env["product.product"].create({"name": "Product 1"})
+        cls.product = cls.env["product.product"].create(
+            {"name": "Product 1", "type": "consu", "is_storable": True}
+        )
         cls.sale_order = cls.env["sale.order"].create(
             {
                 "partner_id": cls.partner.id,

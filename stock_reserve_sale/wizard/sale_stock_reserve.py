@@ -21,14 +21,17 @@ class SaleStockReserve(models.TransientModel):
         return self.env["stock.reservation"]._default_location_dest_id()
 
     location_id = fields.Many2one(
-        "stock.location", "Source Location", required=True, default=_default_location_id
+        "stock.location",
+        "Source Location",
+        required=True,
+        default=lambda self: self._default_location_id(),
     )
     location_dest_id = fields.Many2one(
         "stock.location",
         "Reservation Location",
         required=True,
         help="Location where the system will reserve the products.",
-        default=_default_location_dest_id,
+        default=lambda self: self._default_location_dest_id(),
     )
     date_validity = fields.Date(
         "Validity Date",
@@ -48,11 +51,8 @@ class SaleStockReserve(models.TransientModel):
         )._default_picking_type_id()
         location_id = self.location_id.id
         if picking_type_id and not location_id:
-            picking = self.env["stock.picking"].new(
-                {"picking_type_id": picking_type_id}
-            )
-            picking.onchange_picking_type()
-            location_id = picking.location_id.id
+            picking_type = self.env["stock.picking.type"].browse(picking_type_id)
+            location_id = picking_type.default_location_src_id.id
         location_dest_id = (
             self.location_dest_id.id or reservation_env._default_location_dest_id()
         )
@@ -79,7 +79,7 @@ class SaleStockReserve(models.TransientModel):
             )
         return {
             "product_id": line.product_id.id,
-            "product_uom": line.product_uom.id,
+            "product_uom": line.product_uom_id.id,
             "product_uom_qty": line.product_uom_qty,
             "date_validity": self.date_validity,
             "name": f"{line.order_id.name} ({line.name})",
