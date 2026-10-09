@@ -24,7 +24,11 @@ class StockReservation(models.Model):
         )
         if self.sale_id:
             stock_picking = self.env["stock.picking"].search(
-                [("sale_id", "=", self.sale_id.id), ("state", "!=", "cancel")], limit=1
+                [
+                    ("sale_reserve_id", "=", self.sale_id.id),
+                    ("state", "!=", "cancel"),
+                ],
+                limit=1,
             )
         if stock_picking:
             view_id = self.env.ref("stock.view_picking_form").id

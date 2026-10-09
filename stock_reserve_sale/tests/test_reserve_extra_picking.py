@@ -52,3 +52,16 @@ class TestReserveExtraPicking(TestReserveExtraPickingCommon):
         self.assertTrue(self.picking)
         self.assertTrue(self.picking_2)
         self.assertNotEqual(self.picking, self.picking_2)
+
+    def test_view_reserves_stock_picking_reservation(self):
+        for order in self.sale_order | self.sale_order_2:
+            self.env["sale.stock.reserve"].with_context(
+                active_model="sale.order", active_ids=order.ids
+            ).create({}).button_reserve()
+        for order in self.sale_order | self.sale_order_2:
+            picking = self.env["stock.picking"].search(
+                [("sale_reserve_id", "=", order.id)]
+            )
+            reservation = order.stock_reservation_ids[:1]
+            action = reservation.action_view_reserves_stock_picking_reservation()
+            self.assertEqual(action["res_id"], picking.id)
