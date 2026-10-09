@@ -27,7 +27,7 @@ class SaleStockReserve(models.TransientModel):
         "stock.location",
         "Reservation Location",
         required=True,
-        help="Location where the system will reserve the " "products.",
+        help="Location where the system will reserve the products.",
         default=_default_location_dest_id,
     )
     date_validity = fields.Date(
