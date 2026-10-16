@@ -83,16 +83,19 @@ class StockMove(models.Model):
                         next_quant = strategy.send(still_need)
                         if not next_quant:
                             continue
-                        location, location_quantity, to_take = next_quant
+                        to_take, location, lot, pack, owner, strict_reservation = (
+                            next_quant
+                        )
+
                         taken_in_loc = super()._update_reserved_quantity(
                             # in this strategy, we take as much as we can
                             # from this bin
                             to_take,
                             location_id=location,
-                            lot_id=lot_id,
-                            package_id=package_id,
-                            owner_id=owner_id,
-                            strict=strict,
+                            lot_id=lot,
+                            package_id=pack,
+                            owner_id=owner,
+                            strict=strict_reservation,
                         )
                         still_need -= taken_in_loc
                         # We should break between quants if original needs is fulfilled
