@@ -27,6 +27,11 @@
                                 options="{'no_create': 1}"
                             />
                             <field name="force_reassign_partial" />
+                            <field name="strict_packaging_qty_match" />
+                            <field
+                                name="strict_packaging_qty_match_ignore_level_ids"
+                                widget="many2many_tags"
+                            />
                             <field name="sequence" />
                         </group>
                         <group>

@@ -66,6 +66,15 @@ class StockReserveRule(models.Model):
         help="Check this box if you want to remove existing reservation when checking "
         "availabilty of partially available moves."
     )
+    strict_packaging_qty_match = fields.Boolean(
+        help="Check this box if you want to reserve only a quant whose available "
+        "quantity is bigger than the requested packaging."
+    )
+    strict_packaging_qty_match_ignore_level_ids = fields.Many2many(
+        comodel_name="product.packaging.level",
+        help="If you ignore a packaging level, only the next biggest packaging below "
+        "the ignored ones will be considered",
+    )
 
     def _rules_for_location(self, location):
         return self.search([("location_id", "parent_of", location.id)])
@@ -176,10 +185,10 @@ class StockReserveRuleRemoval(models.Model):
     def _filter_quants(self, move, quants):
         domain = safe_eval(self.quant_domain) or []
         if domain:
-            return self._eval_quant_domain(quants, domain)
+            quants = self._eval_quant_domain(quants, domain)
         return quants
 
-    def _apply_strategy(self, quants):
+    def _apply_strategy(self, quants, strict_packaging=None):
         """Apply the advanced removal strategy
 
         New methods can be added by:
@@ -202,24 +211,31 @@ class StockReserveRuleRemoval(models.Model):
 
         """
         method_name = f"_apply_strategy_{self.removal_strategy}"
-        yield from getattr(self, method_name)(quants)
+        yield from getattr(self, method_name)(quants, strict_packaging=strict_packaging)
 
-    def _apply_strategy_default(self, quants):
+    def _apply_strategy_default(self, quants, strict_packaging=None):
         need = yield
         # Propose quants in the same order than returned originally by
         # the _gather method, so based on fifo, fefo, ...
         for quant in quants:
+            if strict_packaging:
+                yield from self.with_context(
+                    force_packaging_type_filter=strict_packaging.packaging_level_id
+                )._apply_strategy_packaging(quants, strict_packaging=strict_packaging)
             need = yield (
-                quant.location_id,
-                quant.quantity - quant.reserved_quantity,
                 need,
+                quant.location_id,
+                self.env["stock.lot"].browse(),
+                self.env["stock.quant.package"].browse(),
+                self.env["res.partner"].browse(),
+                False,
             )
 
-    def _apply_strategy_empty_bin(self, quants):
+    def _apply_strategy_empty_bin(self, quants, strict_packaging=None):
         need = yield
         # Group by location (in this removal strategies, we want to consider
         # the total quantity held in a location).
-        quants_per_bin = quants._group_by_location()
+        quants_per_bin = quants.grouped("location_id")
         # We take goods only if we empty the bin.
         # The original ordering (fefo, fifo, ...) must be kept.
         product = fields.first(quants).product_id
@@ -236,7 +252,7 @@ class StockReserveRuleRemoval(models.Model):
                 "location_id",
             )
         ]
-        for location, location_quants in quants_per_bin:
+        for location, location_quants in quants_per_bin.items():
             if location.id in locations_with_other_quants:
                 continue
 
@@ -247,21 +263,36 @@ class StockReserveRuleRemoval(models.Model):
             if location_quantity <= 0:
                 continue
 
+            if strict_packaging and not float_is_zero(
+                location_quantity % strict_packaging.qty, precision_rounding=rounding
+            ):
+                continue
+
             if (
                 float_compare(need, location_quantity, precision_rounding=rounding)
                 != -1
             ):
-                need = yield location, location_quantity, need
+                need = yield (
+                    need,
+                    location,
+                    self.env["stock.lot"].browse(),
+                    self.env["stock.quant.package"].browse(),
+                    self.env["res.partner"].browse(),
+                    False,
+                )
 
-    def _apply_strategy_packaging(self, quants):
+    def _apply_strategy_packaging(self, quants, strict_packaging=None):
         need = yield
         # Group by location (in this removal strategies, we want to consider
         # the total quantity held in a location).
-        quants_per_bin = quants._group_by_location()
-
+        quants_per_key = quants.grouped(
+            key=lambda qu: (qu.location_id, qu.lot_id, qu.package_id, qu.owner_id)
+        )
         product = fields.first(quants).product_id
 
-        packaging_type_filter = self.packaging_level_ids
+        packaging_type_filter = self._get_packaging_type_filter(
+            strict_packaging=strict_packaging
+        )
 
         # we'll walk the packagings from largest to smallest to have the
         # largest containers as possible (1 pallet rather than 10 boxes)
@@ -271,7 +302,7 @@ class StockReserveRuleRemoval(models.Model):
                     packaging.qty > 0
                     and (
                         packaging.packaging_level_id in packaging_type_filter
-                        if packaging_type_filter
+                        if packaging_type_filter is not None
                         else True
                     )
                 )
@@ -285,7 +316,7 @@ class StockReserveRuleRemoval(models.Model):
             return float_compare(value, other, precision_rounding=rounding) >= 0
 
         for pack_quantity in packaging_quantities:
-            for location, location_quants in quants_per_bin:
+            for (location, lot, pack, owner), location_quants in quants_per_key.items():
                 location_quantity = sum(location_quants.mapped("quantity")) - sum(
                     location_quants.mapped("reserved_quantity")
                 )
@@ -302,4 +333,24 @@ class StockReserveRuleRemoval(models.Model):
                     if float_is_zero(take, precision_rounding=rounding):
                         continue
                     location_quantity -= take
-                    need = yield location, location_quantity, take
+                    need = yield take, location, lot, pack, owner, True
+
+    def _get_packaging_type_filter(self, strict_packaging=None):
+        force_packaging_type_filter = self.env.get("force_packaging_type_filter", None)
+        if force_packaging_type_filter is not None:
+            return force_packaging_type_filter
+        if strict_packaging is None and self.packaging_level_ids:
+            packaging_type_filter = self.packaging_level_ids
+        elif (
+            strict_packaging
+            and strict_packaging.packaging_level_id
+            and self.packaging_level_ids
+        ):
+            packaging_type_filter = (
+                self.packaging_level_ids & strict_packaging.packaging_level_id
+            )
+        elif strict_packaging and strict_packaging.packaging_level_id:
+            packaging_type_filter = strict_packaging.packaging_level_id
+        else:
+            packaging_type_filter = None
+        return packaging_type_filter
