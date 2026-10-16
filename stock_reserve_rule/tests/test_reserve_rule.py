@@ -610,6 +610,129 @@ class TestReserveRule(ReserveRuleCommon):
         )
         self.assertEqual(move.state, "assigned")
 
+    def test_rule_strict_packaging_qty_match_available(self):
+        self._setup_packagings(
+            self.product1,
+            [
+                ("Pallet", 500, self.pallet),
+                ("Transport Box", 100, self.transport_box),
+                ("Retail Box", 50, self.retail_box),
+            ],
+        )
+        # Put in stock 1 pack of 50pces per bin
+        for cnt in range(5):
+            pack = self.env["stock.quant.package"].create({"name": f"PACK000{cnt}"})
+            self._update_qty_in_location(
+                self.loc_zone1_bin1,
+                self.product1,
+                50,
+                package=pack,
+            )
+
+        picking = self._create_picking(self.wh, [(self.product1, 200)])
+        transport_packaging = self.env["product.packaging"].search(
+            [
+                ("product_id", "=", self.product1.id),
+                ("packaging_level_id", "=", self.transport_box.id),
+            ]
+        )
+        move = picking.move_ids
+        move.product_packaging_id = transport_packaging
+        self.assertEqual(move.state, "confirmed")
+        # Without any specific rule it can be assigned
+        picking.action_assign()
+        self.assertEqual(move.state, "assigned")
+        picking.do_unreserve()
+        self.assertEqual(move.state, "confirmed")
+        # Create a rule for strict packaging where only pallets are ignored
+        #  In that case only TUs must be reserved
+        self._create_rule(
+            {
+                "strict_packaging_qty_match": True,
+            },
+            [
+                {
+                    "location_id": self.loc_zone1.id,
+                    "sequence": 1,
+                    "removal_strategy": "packaging",
+                },
+            ],
+        )
+        # Cannot assign anything since each bin contains a CU
+        picking.action_assign()
+        self.assertEqual(move.state, "confirmed")
+        # Add a TU in a Bin
+        pack = self.env["stock.quant.package"].create({"name": "PACK0006"})
+        self._update_qty_in_location(
+            self.loc_zone1_bin1,
+            self.product1,
+            100,
+            package=pack,
+        )
+        picking.action_assign()
+        self.assertEqual(move.state, "partially_available")
+        self.assertEqual(move.quantity, 100.0)
+
+    def test_rule_strict_packaging_qty_match_available_ignore_pallet(self):
+        self._setup_packagings(
+            self.product1,
+            [
+                ("Pallet", 500, self.pallet),
+                ("Transport Box", 100, self.transport_box),
+                ("Retail Box", 50, self.retail_box),
+            ],
+        )
+        # Put in stock 2 pack of 50pces per bin
+        for cnt in range(2):
+            pack = self.env["stock.quant.package"].create({"name": f"PACK000{cnt}"})
+            self._update_qty_in_location(
+                self.loc_zone1_bin1,
+                self.product1,
+                50,
+                package=pack,
+            )
+        # Put in stock 3 pack of 100pces per bin
+        for cnt in range(3, 6):
+            pack = self.env["stock.quant.package"].create({"name": f"PACK000{cnt}"})
+            self._update_qty_in_location(
+                self.loc_zone1_bin1,
+                self.product1,
+                100,
+                package=pack,
+            )
+
+        picking = self._create_picking(self.wh, [(self.product1, 500)])
+        pallet_packaging = self.env["product.packaging"].search(
+            [
+                ("product_id", "=", self.product1.id),
+                ("packaging_level_id", "=", self.pallet.id),
+            ]
+        )
+        move = picking.move_ids
+        move.product_packaging_id = pallet_packaging
+        self.assertEqual(move.state, "confirmed")
+        # Create a rule for strict packaging where only pallets are ignored
+        self._create_rule(
+            {
+                "strict_packaging_qty_match": True,
+                "strict_packaging_qty_match_ignore_level_ids": [
+                    fields.Command.set(self.pallet.ids)
+                ],
+            },
+            [
+                {
+                    "location_id": self.loc_zone1.id,
+                    "sequence": 1,
+                    "removal_strategy": "packaging",
+                },
+            ],
+        )
+        # Here it must reserve only the transport unit since it's the next biggest
+        #  packaging below pallet that is ignored
+        picking.action_assign()
+        self.assertEqual(move.state, "partially_available")
+        self.assertEqual(move.quantity, 300.0)
+
     def test_rule_excluded_not_child_location(self):
         self._update_qty_in_location(self.loc_zone1_bin1, self.product1, 100)
         self._update_qty_in_location(self.loc_zone1_bin2, self.product1, 100)
