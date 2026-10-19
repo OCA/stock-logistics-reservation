@@ -44,20 +44,16 @@ class StockPickingType(models.Model):
         # "count_picking_waiting", to remove the "need_release" records
         domains = self._compute_picking_count_need_release_domains()
         for field, domain in domains.items():
-            data = self.env["stock.picking"].read_group(
+            data = self.env["stock.picking"]._read_group(
                 domain
                 + [
                     ("state", "not in", ("done", "cancel")),
                     ("picking_type_id", "in", self.ids),
                 ],
                 ["picking_type_id"],
-                ["picking_type_id"],
+                ["__count"],
             )
-            count = {
-                row["picking_type_id"][0]: row["picking_type_id_count"]
-                for row in data
-                if row["picking_type_id"]
-            }
+            count = {picking_type.id: count for picking_type, count in data}
             for record in self:
                 record[field] = count.get(record.id, 0)
         return res

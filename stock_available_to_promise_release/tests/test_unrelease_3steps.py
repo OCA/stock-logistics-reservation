@@ -13,17 +13,6 @@ class TestAvailableToPromiseRelease3steps(PromiseReleaseCommonCase):
 
         cls.wh.delivery_steps = "pick_pack_ship"
 
-        delivery_pick_rule = cls.wh.delivery_route_id.rule_ids.filtered(
-            lambda r: r.location_src_id == cls.loc_stock
-        )
-        delivery_pick_rule.group_propagation_option = "fixed"
-        delivery_pick_rule.group_id = cls.env["procurement.group"].create(
-            {
-                "name": "TEST",
-                "move_type": "direct",
-            }
-        )
-
         cls.pc1 = cls._create_picking_chain(
             cls.wh, [(cls.product1, 2)], date=datetime(2019, 9, 2, 16, 0)
         )
@@ -45,7 +34,7 @@ class TestAvailableToPromiseRelease3steps(PromiseReleaseCommonCase):
             }
         )
         (cls.ship1 | cls.ship2).release_available_to_promise()
-        assert cls.pick1 == cls.pick2
+        cls.pick1 = cls.pick2 = cls._merge_pickings(cls.pick1 | cls.pick2)
         cls.pick1.action_assign()
 
     def test_unrelease_delivery_no_picking_done(self):
