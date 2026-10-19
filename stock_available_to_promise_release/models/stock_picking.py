@@ -3,7 +3,8 @@
 # Copyright 2024 Jacques-Etienne Baudoux (BCIM) <je@bcim.be>
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl.html).
 
-from odoo import api, exceptions, fields, models
+from odoo import api, fields, models
+from odoo.fields import Domain
 
 
 class StockPicking(models.Model):
@@ -37,37 +38,22 @@ class StockPicking(models.Model):
 
     @api.depends("move_ids.need_release")
     def _compute_need_release(self):
-        data = self.env["stock.move"].read_group(
+        data = self.env["stock.move"]._read_group(
             [("need_release", "=", True), ("picking_id", "in", self.ids)],
             ["picking_id"],
-            ["picking_id"],
+            ["__count"],
         )
-        count = {
-            row["picking_id"][0]: row["picking_id_count"]
-            for row in data
-            if row["picking_id"]
-        }
+        count = {picking.id: count for picking, count in data}
         for picking in self:
             picking.need_release_count = count.get(picking.id, 0)
             picking.need_release = bool(picking.need_release_count)
 
     def _search_need_release(self, operator, value):
-        if operator not in ("=", "!="):
-            raise exceptions.UserError(self.env._("Unsupported operator: %s", operator))
-        groups = self.env["stock.move"].read_group(
-            [("need_release", "=", True)], ["picking_id"], ["picking_id"]
-        )
+        if operator != "in":
+            return NotImplemented
         # if we have at least one stock move that needs release, the
         # picking needs release
-        combinations = {
-            ("=", True): "in",
-            ("=", False): "not in",
-            ("!=", True): "not in",
-            ("!=", False): "in",
-        }
-        in_operator = combinations[(operator, value)]
-        picking_ids = [group["picking_id"][0] for group in groups]
-        return [("id", in_operator, picking_ids)]
+        return Domain("move_ids.need_release", "=", True)
 
     def _get_release_ready_depends(self):
         return [
@@ -107,8 +93,8 @@ class StockPicking(models.Model):
                 )
 
     def _search_release_ready(self, operator, value):
-        if operator != "=":
-            raise exceptions.UserError(self.env._("Unsupported operator: %s", operator))
+        if operator != "in":
+            return NotImplemented
         # if we search moves with a promise qty > 0, we restrict
         # the number of moves / pickings to filter afterwards
         moves = self.env["stock.move"].search(
@@ -118,7 +104,7 @@ class StockPicking(models.Model):
         # depends set, invalidate cache before reading
         moves.picking_id.invalidate_recordset(["release_ready"])
         pickings = moves.picking_id.filtered("release_ready")
-        return [("id", "in", pickings.ids)]
+        return Domain("id", "in", pickings.ids)
 
     @api.depends("move_ids.date_priority")
     def _compute_date_priority(self):

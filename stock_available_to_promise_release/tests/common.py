@@ -35,20 +35,14 @@ class PromiseReleaseCommonCase(common.TransactionCase):
             {"name": "Product 4", "type": "consu", "is_storable": True}
         )
         cls.uom_unit = cls.env.ref("uom.product_uom_unit")
-        cls.partner_delta = cls.env.ref("base.res_partner_4")
+        cls.partner_delta = cls.env["res.partner"].create({"name": "Delta PC"})
         cls.loc_bin1 = cls.env["stock.location"].create(
             {"name": "Bin1", "location_id": cls.loc_stock.id}
         )
 
     @classmethod
-    def _create_procurement_group(cls, move_type="direct"):
-        cls.group = cls.env["procurement.group"].create(
-            {
-                "name": "TEST",
-                "move_type": move_type,
-                "partner_id": cls.partner_delta.id,
-            }
-        )
+    def _create_stock_reference(cls):
+        cls.group = cls.env["stock.reference"].create({"name": "TEST"})
 
     @classmethod
     def _create_picking_chain(cls, wh, products=None, date=None, move_type="direct"):
@@ -66,10 +60,11 @@ class PromiseReleaseCommonCase(common.TransactionCase):
         if products is None:
             products = []
 
-        cls._create_procurement_group(move_type=move_type)
+        cls._create_stock_reference()
         values = {
             "company_id": wh.company_id,
-            "group_id": cls.group,
+            "reference_ids": cls.group,
+            "partner_id": cls.partner_delta.id,
             "date_planned": date or fields.Datetime.now(),
             "warehouse_id": wh,
         }
@@ -85,9 +80,9 @@ class PromiseReleaseCommonCase(common.TransactionCase):
                     "Expect (product, quantity, uom) or (product, quantity)"
                 )
 
-            cls.env["procurement.group"].run(
+            cls.env["stock.rule"].run(
                 [
-                    cls.env["procurement.group"].Procurement(
+                    cls.env["stock.rule"].Procurement(
                         product,
                         qty,
                         uom,
@@ -100,15 +95,28 @@ class PromiseReleaseCommonCase(common.TransactionCase):
                 ]
             )
         pickings = cls._pickings_in_group(cls.group)
+        pickings.write({"move_type": move_type, "release_policy": move_type})
         pickings.move_ids.write({"date_priority": date or fields.Datetime.now()})
         return pickings
 
     @classmethod
     def _pickings_in_group(cls, group, include_cancel=True):
-        domain = [("group_id", "=", group.id)]
+        domain = [("reference_ids", "in", group.ids)]
         if not include_cancel:
             domain.append(("state", "!=", "cancel"))
         return cls.env["stock.picking"].search(domain)
+
+    @classmethod
+    def _merge_pickings(cls, pickings):
+        """Gather the moves of the pickings into the first one and merge them
+
+        Replaces the fixed procurement group on the pick rule, removed in 19.0.
+        """
+        picking = pickings.sorted("id")[:1]
+        pickings.move_ids._do_unreserve()
+        (pickings - picking).move_ids.picking_id = picking
+        picking.move_ids._merge_moves()
+        return picking
 
     @classmethod
     def _update_qty_in_location(cls, location, product, quantity):

@@ -13,15 +13,12 @@ class ProductProduct(models.Model):
 
     @api.depends("stock_move_ids.need_release")
     def _compute_move_need_release_count(self):
-        grouped_move_data = self.env["stock.move"].read_group(
-            domain=[("product_id", "in", self.ids), ("need_release", "=", True)],
-            fields=["product_id"],
-            groupby=["product_id"],
+        grouped_move_data = self.env["stock.move"]._read_group(
+            [("product_id", "in", self.ids), ("need_release", "=", True)],
+            ["product_id"],
+            ["__count"],
         )
-        release_counts = {
-            group["product_id"][0]: group["product_id_count"]
-            for group in grouped_move_data
-        }
+        release_counts = {product.id: count for product, count in grouped_move_data}
         for product in self:
             product.move_need_release_count = release_counts.get(product.id, 0)
 

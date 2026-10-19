@@ -13,7 +13,7 @@
             <field name="reference" position="after">
                 <field name="partner_id" string="Customer" />
                 <field name="origin" optional="show" />
-                <field name="group_id" optional="show" />
+                <field name="reference_ids" optional="show" widget="many2many_tags" />
                 <field name="priority" optional="show" />
             </field>
             <field name="product_uom_qty" position="after">

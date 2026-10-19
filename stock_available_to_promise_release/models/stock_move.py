@@ -3,14 +3,13 @@
 # Copyright 2023 Michael Tietz (MT Software) <mtietz@mt-software.de>
 # Copyright 2025 Raumschmiede GmbH
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl.html).
-import itertools
 import logging
 import operator as py_operator
 from collections import defaultdict
 
 from odoo import api, fields, models
 from odoo.exceptions import UserError
-from odoo.osv import expression
+from odoo.fields import Domain
 from odoo.tools import date_utils, float_compare, float_is_zero, float_round, groupby
 
 from odoo.addons.stock.models.stock_move import StockMove as StockMoveBase
@@ -31,14 +30,14 @@ class StockMove(models.Model):
     previous_promised_qty = fields.Float(
         string="Quantity Promised before this move",
         compute="_compute_previous_promised_qty",
-        digits="Product Unit of Measure",
+        digits="Product Unit",
         help="Quantities promised to moves with higher priority than this move "
         "(in default UoM of the product).",
     )
     ordered_available_to_promise_qty = fields.Float(
         string="Ordered Available to Promise (Real Qty)",
         compute="_compute_ordered_available_to_promise",
-        digits="Product Unit of Measure",
+        digits="Product Unit",
         help="Available to Promise quantity minus quantities promised "
         " to moves with higher priority (in default UoM of the product).",
     )
@@ -46,7 +45,7 @@ class StockMove(models.Model):
         string="Ordered Available to Promise",
         compute="_compute_ordered_available_to_promise",
         search="_search_ordered_available_to_promise_uom_qty",
-        digits="Product Unit of Measure",
+        digits="Product Unit",
         help="Available to Promise quantity minus quantities promised "
         " to moves with higher priority (in initial demand's UoM).",
     )
@@ -369,11 +368,11 @@ class StockMove(models.Model):
             move.release_ready = release_ready
 
     def _search_release_ready(self, operator, value):
-        if operator != "=":
-            raise UserError(self.env._("Unsupported operator %s", operator))
+        if operator != "in":
+            return NotImplemented
         moves = self.search([("ordered_available_to_promise_uom_qty", ">", 0)])
         moves = moves.filtered(lambda m: m.release_ready)
-        return [("id", "in", moves.ids)]
+        return Domain("id", "in", moves.ids)
 
     def _get_ordered_available_to_promise_by_warehouse(self, warehouse):
         res = {}
@@ -386,14 +385,14 @@ class StockMove(models.Model):
             return res
 
         location_domain = warehouse.view_location_id._get_available_to_promise_domain()
-        domain_quant = expression.AND(
-            [[("product_id", "in", self.product_id.ids)], location_domain]
+        domain_quant = Domain("product_id", "in", self.product_id.ids) & Domain(
+            location_domain
         )
-        location_quants = self.env["stock.quant"].read_group(
-            domain_quant, ["product_id", "quantity"], ["product_id"]
+        location_quants = self.env["stock.quant"]._read_group(
+            domain_quant, ["product_id"], ["quantity:sum"]
         )
         quants_available = {
-            item["product_id"][0]: item["quantity"] for item in location_quants
+            product.id: quantity for product, quantity in location_quants
         }
         for move in self:
             product_uom = move.product_id.uom_id
@@ -453,11 +452,11 @@ class StockMove(models.Model):
             "<=": py_operator.le,
             ">": py_operator.gt,
             ">=": py_operator.ge,
-            "=": py_operator.eq,
-            "!=": py_operator.ne,
+            "in": lambda qty, values: qty in values,
+            "not in": lambda qty, values: qty not in values,
         }
         if operator not in operator_mapping:
-            raise UserError(self.env._("Unsupported operator %s", operator))
+            return NotImplemented
         moves = self.search([("need_release", "=", True)])
         operator_func = operator_mapping[operator]
         # computed field has no depends set, invalidate cache before reading
@@ -465,7 +464,7 @@ class StockMove(models.Model):
         moves = moves.filtered(
             lambda m: operator_func(m.ordered_available_to_promise_uom_qty, value)
         )
-        return [("id", "in", moves.ids)]
+        return Domain("id", "in", moves.ids)
 
     def _should_compute_ordered_available_to_promise(self):
         return (
@@ -499,7 +498,7 @@ class StockMove(models.Model):
         return self._run_stock_rule()
 
     def _get_release_decimal_precision(self):
-        return self.env["decimal.precision"].precision_get("Product Unit of Measure")
+        return self.env["decimal.precision"].precision_get("Product Unit")
 
     def _get_release_remaining_qty(self):
         self.ensure_one()
@@ -516,7 +515,7 @@ class StockMove(models.Model):
         return res
 
     def _run_stock_rule(self):
-        """Launch procurement group run method with remaining quantity
+        """Launch stock rule run method with remaining quantity
 
         As we only generate chained moves for the quantity available minus the
         quantity promised to older moves, to delay the reservation at the
@@ -558,7 +557,7 @@ class StockMove(models.Model):
             values = move._prepare_procurement_values()
             values["move_dest_ids"] = move
             procurement_requests.append(
-                self.env["procurement.group"].Procurement(
+                self.env["stock.rule"].Procurement(
                     move.product_id,
                     move.product_uom_qty,
                     move.product_uom,
@@ -569,7 +568,7 @@ class StockMove(models.Model):
                     values,
                 )
             )
-        self.env["procurement.group"].run_defer(procurement_requests)
+        self.env["stock.rule"].run_defer(procurement_requests)
 
         released_moves._after_release_update_chain()
 
@@ -674,6 +673,9 @@ class StockMove(models.Model):
         priorities = self.mapped("move_dest_ids.picking_id.priority")
         if priorities:
             self.picking_id.write({"priority": max(priorities)})
+        if new:
+            # move_type is only known once the moves are linked (sale_stock)
+            self.picking_id.release_policy = self.picking_id.move_type
         return res
 
     def _get_chained_moves_iterator(self, chain_field):
@@ -702,7 +704,7 @@ class StockMove(models.Model):
                 continue
             return_type = picking_type.return_picking_type_id
             wiz_values = {
-                "picking_id": fields.first(pickings).id,
+                "picking_id": pickings[:1].id,
             }
             product_return_moves = []
             if not return_type:
@@ -849,8 +851,8 @@ class StockMove(models.Model):
                     # Without allow_unrelease_return_done_move enabled,
                     # only moves that aren't done can be unreleased.
                     msg_args = {
-                        "move_name": move.name,
-                        "done_move_names": ", ".join(done_moves.mapped("name")),
+                        "move_name": move.product_id.display_name,
+                        "done_move_names": done_moves.mapped("reference"),
                     }
                     message = self.env._(
                         (
@@ -874,9 +876,7 @@ class StockMove(models.Model):
             move._recompute_state()
         self._return_quantity_in_stock(qty_to_return_per_move)
         moves_to_unrelease.write({"need_release": True})
-        for picking, moves in itertools.groupby(
-            moves_to_unrelease, lambda m: m.picking_id
-        ):
+        for picking, moves in groupby(moves_to_unrelease, lambda m: m.picking_id):
             if not picking:
                 continue
             move_names = "\n".join([m.display_name for m in moves])
@@ -901,7 +901,7 @@ class StockMove(models.Model):
         rounding = self.product_uom.rounding
         new_origin_moves = self.env["stock.move"]
         while float_compare(qty, 0, precision_rounding=rounding) > 0 and origins:
-            origin = fields.first(origins)
+            origin = origins[:1]
             if float_compare(qty, origin.product_qty, precision_rounding=rounding) >= 0:
                 qty -= origin.product_qty
                 new_origin_moves |= origin
@@ -920,22 +920,10 @@ class StockMove(models.Model):
         if self.env.context.get("release_available_to_promise"):
             # We want a newer picking, search with '>' to prevent to select
             # any old available picking
-            domain = expression.AND([domain, [("id", ">", self.picking_id.id)]])
+            domain = Domain(domain) & Domain("id", ">", self.picking_id.id)
         if self.picking_type_id.prevent_new_move_after_release:
-            domain = expression.AND([domain, [("last_release_date", "=", False)]])
+            domain = Domain(domain) & Domain("last_release_date", "=", False)
         return domain
-
-    def _get_new_picking_values(self):
-        values = super()._get_new_picking_values()
-        # In v18, 'move_type' is no longer provided in values by default,
-        # so we retrieve it from the group instead.
-        move_type = (
-            fields.first(self.group_id).move_type
-            or fields.first(self.picking_type_id).move_type
-            or "direct"
-        )
-        values["release_policy"] = move_type
-        return values
 
     def write(self, vals):
         released_moves = self.browse()

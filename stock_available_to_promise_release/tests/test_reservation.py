@@ -14,7 +14,6 @@ class TestAvailableToPromiseRelease(PromiseReleaseCommonCase):
     def test_horizon_date(self):
         move = self.env["stock.move"].create(
             {
-                "name": "testing ctx",
                 "product_id": self.product1.id,
                 "product_uom_qty": 1,
                 "product_uom": self.uom_unit.id,
@@ -435,7 +434,7 @@ class TestAvailableToPromiseRelease(PromiseReleaseCommonCase):
         )
 
         cust_picking.move_ids.release_available_to_promise()
-        out_picking = self._pickings_in_group(pickings.group_id) - cust_picking
+        out_picking = self._pickings_in_group(pickings.reference_ids) - cust_picking
         self.assertRecordValues(
             out_picking,
             [
@@ -471,7 +470,7 @@ class TestAvailableToPromiseRelease(PromiseReleaseCommonCase):
         cust_picking.move_ids.release_available_to_promise()
         # no chain picking should have been created because we would have a
         # partial and the move delivery type is "one"
-        out_picking = self._pickings_in_group(pickings.group_id) - cust_picking
+        out_picking = self._pickings_in_group(pickings.reference_ids) - cust_picking
         self.assertFalse(out_picking)
 
         self._update_qty_in_location(self.loc_bin1, self.product1, 10.0)
@@ -485,7 +484,7 @@ class TestAvailableToPromiseRelease(PromiseReleaseCommonCase):
         )
         # now, we have enough, the picking is created
         cust_picking.move_ids.release_available_to_promise()
-        out_picking = self._pickings_in_group(pickings.group_id) - cust_picking
+        out_picking = self._pickings_in_group(pickings.reference_ids) - cust_picking
         self.assertRecordValues(
             out_picking,
             [
@@ -525,7 +524,7 @@ class TestAvailableToPromiseRelease(PromiseReleaseCommonCase):
         self.assertEqual(len(split_cust_picking), 1)
 
         out_picking = (
-            self._pickings_in_group(pickings.group_id)
+            self._pickings_in_group(pickings.reference_ids)
             - cust_picking
             - split_cust_picking
         )
@@ -590,7 +589,9 @@ class TestAvailableToPromiseRelease(PromiseReleaseCommonCase):
         self.assertRecordValues(cust_picking, [{"state": "done"}])
 
         cust_backorder = (
-            self._pickings_in_group(cust_picking.group_id) - cust_picking - out_picking
+            self._pickings_in_group(cust_picking.reference_ids)
+            - cust_picking
+            - out_picking
         )
         self.assertEqual(len(cust_backorder), 1)
 
@@ -602,9 +603,9 @@ class TestAvailableToPromiseRelease(PromiseReleaseCommonCase):
             ]
         )
         # nothing happen, no stock
-        self.assertEqual(len(self._pickings_in_group(cust_picking.group_id)), 3)
+        self.assertEqual(len(self._pickings_in_group(cust_picking.reference_ids)), 3)
         cust_backorder.release_available_to_promise()
-        self.assertEqual(len(self._pickings_in_group(cust_picking.group_id)), 3)
+        self.assertEqual(len(self._pickings_in_group(cust_picking.reference_ids)), 3)
 
         self.env["stock.move"].invalidate_model(
             fnames=[
@@ -618,7 +619,7 @@ class TestAvailableToPromiseRelease(PromiseReleaseCommonCase):
         self._update_qty_in_location(self.loc_bin1, self.product1, 30)
         cust_backorder.release_available_to_promise()
         out_backorder = (
-            self._pickings_in_group(cust_picking.group_id)
+            self._pickings_in_group(cust_picking.reference_ids)
             - cust_backorder
             - cust_picking
             - out_picking
@@ -691,7 +692,7 @@ class TestAvailableToPromiseRelease(PromiseReleaseCommonCase):
         )
 
         out_picking = (
-            self._pickings_in_group(pickings.group_id) - cust_picking - backorder
+            self._pickings_in_group(pickings.reference_ids) - cust_picking - backorder
         )
         self.assertRecordValues(
             out_picking,
@@ -742,7 +743,7 @@ class TestAvailableToPromiseRelease(PromiseReleaseCommonCase):
         self.assertEqual(len(split_cust_picking), 0)
 
         out_picking = (
-            self._pickings_in_group(pickings.group_id, include_cancel=False)
+            self._pickings_in_group(pickings.reference_ids, include_cancel=False)
             - cust_picking
         )
         # the complete one is assigned and placed into stock output
@@ -797,7 +798,7 @@ class TestAvailableToPromiseRelease(PromiseReleaseCommonCase):
         self.assertRecordValues(cust_picking, [{"state": "done"}])
 
         cust_backorder = (
-            self._pickings_in_group(cust_picking.group_id, include_cancel=False)
+            self._pickings_in_group(cust_picking.reference_ids, include_cancel=False)
             - cust_picking
             - out_picking
         )
@@ -812,11 +813,21 @@ class TestAvailableToPromiseRelease(PromiseReleaseCommonCase):
         )
         # nothing happen, no stock
         self.assertEqual(
-            len(self._pickings_in_group(cust_picking.group_id, include_cancel=False)), 3
+            len(
+                self._pickings_in_group(
+                    cust_picking.reference_ids, include_cancel=False
+                )
+            ),
+            3,
         )
         cust_backorder.release_available_to_promise()
         self.assertEqual(
-            len(self._pickings_in_group(cust_picking.group_id, include_cancel=False)), 3
+            len(
+                self._pickings_in_group(
+                    cust_picking.reference_ids, include_cancel=False
+                )
+            ),
+            3,
         )
 
         self.env["stock.move"].invalidate_model(
@@ -831,7 +842,7 @@ class TestAvailableToPromiseRelease(PromiseReleaseCommonCase):
         self._update_qty_in_location(self.loc_bin1, self.product1, 30)
         cust_backorder.release_available_to_promise()
         out_backorder = (
-            self._pickings_in_group(cust_picking.group_id, include_cancel=False)
+            self._pickings_in_group(cust_picking.reference_ids, include_cancel=False)
             - cust_backorder
             - cust_picking
             - out_picking
@@ -919,7 +930,7 @@ class TestAvailableToPromiseRelease(PromiseReleaseCommonCase):
             ],
         )
 
-        out_picking = self._pickings_in_group(pickings.group_id) - cust_picking
+        out_picking = self._pickings_in_group(pickings.reference_ids) - cust_picking
         self.assertRecordValues(
             out_picking,
             [
@@ -984,7 +995,7 @@ class TestAvailableToPromiseRelease(PromiseReleaseCommonCase):
         self.assertEqual(len(split_cust_picking), 1)
 
         out_picking = (
-            self._pickings_in_group(pickings.group_id)
+            self._pickings_in_group(pickings.reference_ids)
             - cust_picking
             - split_cust_picking
         )
@@ -1264,5 +1275,5 @@ class TestAvailableToPromiseRelease(PromiseReleaseCommonCase):
         picking.release_policy = "direct"
         self.assertTrue(picking.release_ready)
         picking.release_available_to_promise()
-        new_picking = self._pickings_in_group(picking.group_id) - picking
-        self.assertEqual(new_picking.move_type, "one")
+        self.assertEqual(picking.release_policy, "direct")
+        self.assertEqual(self._prev_picking(picking).move_ids.product_id, self.product1)
