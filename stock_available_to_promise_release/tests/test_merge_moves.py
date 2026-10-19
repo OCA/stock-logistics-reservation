@@ -11,16 +11,6 @@ class TestMergeMoves(PromiseReleaseCommonCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        delivery_pick_rule = cls.wh.delivery_route_id.rule_ids.filtered(
-            lambda r: r.location_src_id == cls.loc_stock
-        )
-        delivery_pick_rule.group_propagation_option = "fixed"
-        delivery_pick_rule.group_id = cls.env["procurement.group"].create(
-            {
-                "name": "TEST",
-                "move_type": "direct",
-            }
-        )
         cls.pc1 = cls._create_picking_chain(
             cls.wh, [(cls.product1, 2)], date=datetime(2019, 9, 2, 16, 0)
         )
@@ -52,13 +42,13 @@ class TestMergeMoves(PromiseReleaseCommonCase):
         """
         values = {
             "company_id": self.wh.company_id,
-            "group_id": self.shipping1.group_id,
+            "reference_ids": self.shipping1.reference_ids,
             "date_planned": self.shipping1.move_ids[0].date,
             "warehouse_id": self.wh,
         }
-        self.env["procurement.group"].run(
+        self.env["stock.rule"].run(
             [
-                self.env["procurement.group"].Procurement(
+                self.env["stock.rule"].Procurement(
                     self.product1,
                     qty,
                     self.product1.uom_id,
@@ -125,16 +115,12 @@ class TestMergeMoves(PromiseReleaseCommonCase):
         )
         shipping2 = self._out_picking(pc2)
         shipping2.release_available_to_promise()
-        picking2 = self._prev_picking(shipping2)
-        picking2.action_assign()
-        self.assertEqual(self.picking1, picking2)
+        self._merge_pickings(self.picking1 | self._prev_picking(shipping2))
+        self.picking1.action_assign()
         self.assertEqual(1, len(self.picking1.move_ids))
 
         original_qty_1 = self.shipping1.move_ids.product_uom_qty
         original_qty_2 = shipping2.move_ids.product_uom_qty
-
-        # pick1 and pick2 are the same
-        self.assertEqual(self.picking1, picking2)
 
         # partially process the picking
         move = self.picking1.move_ids

@@ -204,12 +204,12 @@ class TestAvailableToPromiseRelease(PromiseReleaseCommonCase):
         Simulate a quantity cancel
         """
         values = {
-            "group_id": self.group,
+            "reference_ids": self.group,
             "warehouse_id": self.wh,
         }
-        self.env["procurement.group"].run(
+        self.env["stock.rule"].run(
             [
-                self.env["procurement.group"].Procurement(
+                self.env["stock.rule"].Procurement(
                     self.product1,
                     -5.0,
                     self.product1.uom_id,

@@ -12,12 +12,10 @@ class TestAvailableToPromiseReleaseCancelFixedPick(PromiseReleaseCommonCase):
 
         cls._update_qty_in_location(cls.loc_bin1, cls.product1, 50.0)
         cls._update_qty_in_location(cls.loc_bin1, cls.product2, 50.0)
-        pick_rule = cls.wh.delivery_route_id.rule_ids.filtered(
+        delivery_route = cls.wh.delivery_route_id
+        pick_rule = delivery_route.rule_ids.filtered(
             lambda r: r.location_src_id == cls.loc_stock
         )
-        pick_rule.group_propagation_option = "fixed"
-        pick_rule.group_id = cls.env["procurement.group"].create({"name": "Fixed"})
-        delivery_route = cls.wh.delivery_route_id
         delivery_route.write(
             {
                 "available_to_promise_defer_pull": True,
@@ -47,10 +45,8 @@ class TestAvailableToPromiseReleaseCancelFixedPick(PromiseReleaseCommonCase):
         ship_picking2 = self._out_picking(picking_chain2)
         ship_picking2.release_available_to_promise()
         self.assertNotEqual(ship_picking1, ship_picking2)
-        pick1 = self._prev_picking(ship_picking1)
-        pick2 = self._prev_picking(ship_picking2)
-        self.assertEqual(pick1, pick2)
-        self._deliver(pick1)
+        pick = self._merge_pickings(self._prev_picking(ship_picking1 | ship_picking2))
+        self._deliver(pick)
         self.assertEqual(ship_picking1.state, "assigned")
         self.assertEqual(ship_picking2.state, "assigned")
         ship_picking2.action_cancel()
@@ -73,10 +69,8 @@ class TestAvailableToPromiseReleaseCancelFixedPick(PromiseReleaseCommonCase):
         ship_picking2 = self._out_picking(picking_chain2)
         ship_picking2.release_available_to_promise()
         self.assertNotEqual(ship_picking1, ship_picking2)
-        pick1 = self._prev_picking(ship_picking1)
-        pick2 = self._prev_picking(ship_picking2)
-        self.assertEqual(pick1, pick2)
-        self._deliver(pick1)
+        pick = self._merge_pickings(self._prev_picking(ship_picking1 | ship_picking2))
+        self._deliver(pick)
         self.assertEqual(ship_picking1.state, "assigned")
         self.assertEqual(ship_picking2.state, "assigned")
         ship2_product2_move = ship_picking2.move_ids.filtered(
