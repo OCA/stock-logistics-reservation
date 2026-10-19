@@ -50,10 +50,6 @@ class StockRule(models.Model):
         super()._run_pull(actions_to_run)
         return True
 
-
-class ProcurementGroup(models.Model):
-    _inherit = "procurement.group"
-
     def run_defer(self, procurements):
         actions_to_run = []
         for procurement in procurements:

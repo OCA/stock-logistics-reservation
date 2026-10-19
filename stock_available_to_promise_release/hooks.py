@@ -26,6 +26,7 @@ def init_release_policy(env):
             )
         ]
         openupgrade.add_fields(env, field_spec=field_spec)
+        env.cr.execute("UPDATE stock_picking SET release_policy = move_type")
 
 
 def pre_init_hook(env):

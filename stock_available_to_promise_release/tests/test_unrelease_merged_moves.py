@@ -10,16 +10,6 @@ class TestAvailableToPromiseRelease(PromiseReleaseCommonCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        delivery_pick_rule = cls.wh.delivery_route_id.rule_ids.filtered(
-            lambda r: r.location_src_id == cls.loc_stock
-        )
-        delivery_pick_rule.group_propagation_option = "fixed"
-        delivery_pick_rule.group_id = cls.env["procurement.group"].create(
-            {
-                "name": "TEST",
-                "move_type": "direct",
-            }
-        )
         cls.pc1 = cls._create_picking_chain(
             cls.wh, [(cls.product1, 2)], date=datetime(2019, 9, 2, 16, 0)
         )
@@ -36,6 +26,7 @@ class TestAvailableToPromiseRelease(PromiseReleaseCommonCase):
         )
         shippings = cls.shipping1 | cls.shipping2
         shippings.release_available_to_promise()
+        cls._merge_pickings(cls._prev_picking(shippings))
         cls.picking1 = cls._prev_picking(cls.shipping1)
         cls.picking1.action_assign()
         cls.picking2 = cls._prev_picking(cls.shipping2)

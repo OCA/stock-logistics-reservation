@@ -20,10 +20,7 @@ class Company(models.Model):
         " be done, and therefore, past this timestamp, considered late.",
     )
 
-    _sql_constraints = [
-        (
-            "check_stock_release_max_prep_time",
-            "CHECK(stock_release_max_prep_time > 0)",
-            "The 'Transfer Releases Max Prep. Time' must be greater than 0 minutes.",
-        ),
-    ]
+    _check_stock_release_max_prep_time = models.Constraint(
+        "CHECK(stock_release_max_prep_time > 0)",
+        "The 'Transfer Releases Max Prep. Time' must be greater than 0 minutes.",
+    )

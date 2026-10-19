@@ -38,7 +38,9 @@ class TestAvailableToPromiseReleaseCancel(PromiseReleaseCommonCase):
         cls.pack_picking = cls._prev_picking(cls.ship_picking)
         cls.pick_picking = cls._prev_picking(cls.pack_picking)
 
-        cls.demo_user = cls.env.ref("base.user_demo")
+        cls.demo_user = cls.env["res.users"].create(
+            {"name": "Stock User", "login": "stock_user"}
+        )
         cls.ship_picking.user_id = cls.demo_user
         cls.pack_picking.user_id = cls.demo_user
         cls.pick_picking.user_id = cls.demo_user
@@ -144,7 +146,7 @@ class TestAvailableToPromiseReleaseCancel(PromiseReleaseCommonCase):
     def put_in_pack(cls, move):
         # is it necessary to create stock moves?
         move._action_assign()
-        pack = cls.env["stock.quant.package"].create({"name": move.product_id.name})
+        pack = cls.env["stock.package"].create({"name": move.product_id.name})
         move.move_line_ids.result_package_id = pack
         return pack
 
