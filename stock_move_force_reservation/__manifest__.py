@@ -1,0 +1,20 @@
+# Copyright 2024 Akretion France (http://www.akretion.com/)
+# @author: Mathieu Delva <mathieu.delva@akretion.com>
+# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+
+{
+    "name": "Stock Move Force Reservation",
+    "summary": "Force the reservation of a move by unreserving other transfers.",
+    "version": "18.0.1.0.0",
+    "category": "Inventory",
+    "author": "Akretion, Odoo Community Association (OCA)",
+    "website": "https://github.com/OCA/stock-logistics-reservation",
+    "license": "AGPL-3",
+    "depends": ["stock"],
+    "data": [
+        "security/ir.model.access.csv",
+        "views/stock_picking_views.xml",
+        "wizard/stock_move_force_reservation.xml",
+    ],
+    "installable": True,
+}
