@@ -1,0 +1,3 @@
+id,name,model_id,group_id/id,operation,domain
+access_assign_manual_quants_user,access_assign_manual_quants,assign.manual.quants,stock.group_stock_user,crud,
+access_assign_manual_quants_lines_user,access_assign_manual_quants_lines,assign.manual.quants.lines,stock.group_stock_user,crud,
