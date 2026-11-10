@@ -25,6 +25,7 @@ Available addons
 ----------------
 addon | version | maintainers | summary
 --- | --- | --- | ---
+[stock_available_to_promise_release](stock_available_to_promise_release/) | 19.0.1.0.0 |  | Release Operations based on available to promise
 [stock_quant_manual_assign](stock_quant_manual_assign/) | 19.0.1.0.1 |  | Stock - Manual Quant Assignment
 
 [//]: # (end addons)
