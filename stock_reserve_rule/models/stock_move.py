@@ -96,7 +96,16 @@ class StockMove(models.Model):
                 # one should be respected (eg. if we remove quants that would
                 # empty bins first, in case of equality, we should remove the
                 # fifo or fefo first depending of the configuration).
-                strategy = removal_rule._apply_strategy(rule_quants)
+                strict_packaging = (
+                    self._get_reserve_rule_strict_allowed_biggest_packaging(
+                        rule.strict_packaging_qty_match_ignore_level_ids
+                    )
+                    if rule.strict_packaging_qty_match
+                    else None
+                )
+                strategy = removal_rule._apply_strategy(
+                    rule_quants, strict_packaging=strict_packaging
+                )
                 next(strategy)
                 while True:
                     try:
@@ -151,6 +160,36 @@ class StockMove(models.Model):
             owner_id=owner_id,
             strict=strict,
         )
+
+    def _get_reserve_rule_strict_allowed_biggest_packaging(
+        self, ignored_packaging_levels
+    ):
+        move_packaging_level = self.product_packaging_id.packaging_level_id
+        # If the move's packaging does not have a level, or the move's packaging level
+        #  is not ignored, use the packaging
+        if (
+            not move_packaging_level
+            or move_packaging_level not in ignored_packaging_levels
+        ):
+            return self.product_packaging_id
+        # If the move's packaging is ignored, we must return the next unignored
+        #  packaging that is smaller than the requested packaging
+        precision = self.env["decimal.precision"].precision_get(
+            "Product Unit of Measure"
+        )
+        suitable_packagings = self.product_id.packaging_ids.filtered(
+            lambda packaging: (
+                packaging.qty > 0
+                and float_compare(
+                    packaging.qty,
+                    self.product_packaging_id.qty,
+                    precision_digits=precision,
+                )
+                < 0
+                and packaging.packaging_level_id not in ignored_packaging_levels
+            )
+        ).sorted(key="qty", reverse=True)
+        return suitable_packagings[:1]
 
     def _action_assign(self, force_qty=False):
         unreserve_locations = {}
