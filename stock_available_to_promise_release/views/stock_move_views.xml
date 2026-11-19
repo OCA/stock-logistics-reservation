@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
     <record id="view_move_release_tree" model="ir.ui.view">
         <field name="name">Stock Moves Release</field>
@@ -97,8 +97,8 @@
         </field>
     </record>
     <menuitem
-        action="stock_move_release_action"
         id="stock_move_release_menu"
+        action="stock_move_release_action"
         parent="stock.menu_warehouse_report"
         sequence="10"
         groups="stock.group_stock_manager,stock.group_stock_user"

@@ -110,8 +110,10 @@ class StockMove(models.Model):
         if printed_pickings:
             return printed_pickings
         return unreleasable_moves.filtered(
-            lambda m: not m.rule_id.allow_unrelease_return_done_move
-            and any(ml.quantity > 0 and ml.picked for ml in m.move_line_ids)
+            lambda m: (
+                not m.rule_id.allow_unrelease_return_done_move
+                and any(ml.quantity > 0 and ml.picked for ml in m.move_line_ids)
+            )
         )
 
     def _is_unrelease_allowed_on_origin_moves(self, origin_moves):
@@ -569,9 +571,11 @@ class StockMove(models.Model):
         released_pickings = released_moves.picking_id
         unreleased_moves = released_pickings.move_ids - released_moves
         unreleased_moves_to_bo = unreleased_moves.filtered(
-            lambda m: m.state not in ("done", "cancel")
-            and m.need_release
-            and not m.rule_id.no_backorder_at_release
+            lambda m: (
+                m.state not in ("done", "cancel")
+                and m.need_release
+                and not m.rule_id.no_backorder_at_release
+            )
         )
         if unreleased_moves_to_bo:
             unreleased_moves_to_bo._unreleased_to_backorder()
@@ -768,9 +772,9 @@ class StockMove(models.Model):
 
                 returned_moves = return_wiz.product_return_moves.move_id
                 pickings_to_assign = returned_moves.move_dest_ids.picking_id.filtered(
-                    lambda picking, cancel_picking=cancel_picking: picking.id
-                    != cancel_picking.id
-                    and picking.state == "confirmed"
+                    lambda picking, cancel_picking=cancel_picking: (
+                        picking.id != cancel_picking.id and picking.state == "confirmed"
+                    )
                 )
                 if pickings_to_assign:
                     pickings_to_assign.action_assign()
