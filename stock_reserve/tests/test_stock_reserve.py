@@ -77,3 +77,37 @@ class TestStockReserve(BaseCommon):
         cron.method_direct_trigger()
         self.assertEqual(reservation_1.state, "assigned")
         self.assertEqual(self.product.virtual_available, 9)
+
+    def test_reserve_several_reservations_with_different_uoms(self):
+        uom_dozen = self.env.ref("uom.product_uom_dozen")
+        product_dozen = self.env["product.product"].create(
+            {
+                "name": "Test Product in Dozens",
+                "type": "consu",
+                "is_storable": True,
+                "uom_id": uom_dozen.id,
+                "uom_po_id": uom_dozen.id,
+            }
+        )
+        self.env["stock.quant"].create(
+            {
+                "product_id": product_dozen.id,
+                "location_id": self.warehouse.lot_stock_id.id,
+                "quantity": 10.0,
+            }
+        )
+        reservation_unit = self._create_stock_reservation(6)
+        form_reservation = Form(self.env["stock.reservation"])
+        form_reservation.product_id = product_dozen
+        form_reservation.product_uom_qty = 2
+        form_reservation.location_id = self.warehouse.lot_stock_id
+        reservation_dozen = form_reservation.save()
+        reservations = reservation_unit | reservation_dozen
+        self.assertEqual(len(reservations.product_uom), 2)
+        reservations.reserve()
+        self.assertEqual(reservations.mapped("state"), ["assigned", "assigned"])
+        self.assertEqual(self.product.virtual_available, 4)
+        self.assertEqual(product_dozen.virtual_available, 8)
+        reservations.write({"product_uom_qty": 3})
+        self.assertEqual(self.product.virtual_available, 7)
+        self.assertEqual(product_dozen.virtual_available, 7)
