@@ -10,7 +10,7 @@ from collections import defaultdict
 from odoo import api, fields, models
 from odoo.exceptions import UserError
 from odoo.fields import Domain
-from odoo.tools import date_utils, float_compare, float_is_zero, float_round, groupby
+from odoo.tools import date_utils, float_compare, groupby
 
 from odoo.addons.stock.models.stock_move import StockMove as StockMoveBase
 
@@ -128,7 +128,7 @@ class StockMove(models.Model):
                 lambda m: not m.picking_type_id.return_picking_type_id
             )
         origin_qty_done = sum(
-            m.product_uom._compute_quantity(
+            m.uom_id._compute_quantity(
                 m.quantity,
                 m.product_id.uom_id,
                 rounding_method="HALF-UP",
@@ -137,21 +137,14 @@ class StockMove(models.Model):
         )
         dest_done_moves = origin_done_moves.move_dest_ids
         dest_qty_done = sum(
-            m.product_uom._compute_quantity(
+            m.uom_id._compute_quantity(
                 sum(ml.quantity for ml in m.move_line_ids if ml.picked),
                 m.product_id.uom_id,
                 rounding_method="HALF-UP",
             )
             for m in dest_done_moves
         )
-        return (
-            float_compare(
-                origin_qty_done,
-                dest_qty_done,
-                precision_rounding=self.product_id.uom_id.rounding,
-            )
-            <= 0
-        )
+        return self.product_id.uom_id.compare(origin_qty_done, dest_qty_done) <= 0
 
     def _unrelease_not_allowed_error(self):
         message = self.env._("You are not allowed to unrelease those deliveries:\n")
@@ -287,7 +280,7 @@ class StockMove(models.Model):
         self.env["stock.location"].flush_model(["parent_path"])
         previous_promised_qties = {}
         for warehouse, moves in self._group_by_warehouse():
-            moves = self.browse().union(*moves)
+            moves = self.browse().union(moves)
             if not warehouse:
                 for move in moves:
                     previous_promised_qties[move.id] = 0
@@ -333,23 +326,11 @@ class StockMove(models.Model):
         if not self._is_release_needed() or self.state == "draft":
             return False
         release_policy = self.picking_id.release_policy
-        rounding = self.product_id.uom_id.rounding
+        uom = self.product_id.uom_id
         ordered_available_to_promise_qty = self.ordered_available_to_promise_qty
         if release_policy == "one":
-            return (
-                float_compare(
-                    ordered_available_to_promise_qty,
-                    self.product_qty,
-                    precision_rounding=rounding,
-                )
-                == 0
-            )
-        return (
-            float_compare(
-                ordered_available_to_promise_qty, 0, precision_rounding=rounding
-            )
-            > 0
-        )
+            return uom.compare(ordered_available_to_promise_qty, self.product_qty) == 0
+        return uom.compare(ordered_available_to_promise_qty, 0) > 0
 
     def _get_release_ready_depends(self):
         return [
@@ -400,16 +381,14 @@ class StockMove(models.Model):
             product_uom = move.product_id.uom_id
             previous_promised_qty = move.previous_promised_qty
 
-            rounding = product_uom.rounding
-            available_qty = float_round(
-                quants_available.get(move.product_id.id, 0.0),
-                precision_rounding=rounding,
+            available_qty = product_uom.round(
+                quants_available.get(move.product_id.id, 0.0)
             )
 
             real_promised = available_qty - previous_promised_qty
             uom_promised = product_uom._compute_quantity(
                 real_promised,
-                move.product_uom,
+                move.uom_id,
                 rounding_method="HALF-UP",
             )
             res[move] = {
@@ -430,7 +409,7 @@ class StockMove(models.Model):
         # the quantity somewhere. Do not use "qty_available" to get a faster
         # computation.
         for warehouse, moves in moves_by_warehouse:
-            moves = self.browse().union(*moves)
+            moves = self.browse().union(moves)
             res.update(moves._get_ordered_available_to_promise_by_warehouse(warehouse))
         return res
 
@@ -588,7 +567,7 @@ class StockMove(models.Model):
                 self.env["stock.rule"].Procurement(
                     move.product_id,
                     move.product_uom_qty,
-                    move.product_uom,
+                    move.uom_id,
                     move.location_id,
                     move.rule_id and move.rule_id.name or "/",
                     move.origin,
@@ -719,65 +698,79 @@ class StockMove(models.Model):
     def _return_quantity_in_stock(self, qty_to_return_per_move):
         """Return a quantity from a list of moves.
 
-        The quantity to return is in the product uom"""
-        moves_to_return = self.browse([m_id for m_id in qty_to_return_per_move.keys()])
+        The quantity to return is in the product uom.
+        """
+        moves_to_return = self.browse([m_id for m_id in qty_to_return_per_move])
         moves_per_type = groupby(moves_to_return, lambda m: m.picking_type_id)
         for picking_type, moves_list in moves_per_type:
-            moves = self.browse().union(*moves_list)
+            moves = self.browse().union(moves_list)
             pickings = moves.picking_id
             if not pickings:
                 continue
             return_type = picking_type.return_picking_type_id
-            wiz_values = {
-                "picking_id": pickings[:1].id,
-            }
-            product_return_moves = []
             if not return_type:
                 message = self.env._(
                     "The operation %(picking_names)s is done and cannot be returned",
                     picking_names=", ".join(pickings.mapped("name")),
                 )
                 raise UserError(message)
+            moves_to_return_qty = {}
             for move in moves:
                 # Cannot return an unprocessed move
                 if move.state != "done":
                     continue
-                product = move.product_id
-                uom = product.uom_id
+                uom = move.product_id.uom_id
                 qty_to_return = qty_to_return_per_move.get(move.id, 0)
                 # Cannot return 0 qty
-                if float_is_zero(qty_to_return, precision_rounding=uom.rounding):
+                if uom.is_zero(qty_to_return):
                     continue
-                return_move_vals = {
-                    "product_id": product.id,
-                    "quantity": qty_to_return,
-                    "uom_id": uom.id,
-                    "move_id": move.id,
-                }
-                product_return_moves.append((0, 0, return_move_vals))
-            if product_return_moves:
-                wiz_values["product_return_moves"] = product_return_moves
-                location_id = return_type.default_location_dest_id.id
-                return_wiz = (
-                    self.env["stock.return.picking"]
-                    .with_context(return_loc_dest_id=location_id)
-                    .create(wiz_values)
+                moves_to_return_qty[move] = (qty_to_return, uom)
+            if not moves_to_return_qty:
+                continue
+            returned_origin_moves = self.browse(
+                [move.id for move in moves_to_return_qty]
+            )
+            returned_origin_moves.move_dest_ids.filtered(
+                lambda m: m.state not in ("done", "cancel")
+            )._do_unreserve()
+            location_id = return_type.default_location_dest_id.id
+            picking = pickings[:1].with_context(return_loc_dest_id=location_id)
+            new_picking = picking.copy(picking._prepare_return_picking_default_values())
+            new_picking = new_picking.with_context(return_loc_dest_id=location_id)
+            new_picking.message_post_with_source(
+                "mail.message_origin_link",
+                render_values={"self": new_picking, "origin": picking},
+                subtype_xmlid="mail.mt_note",
+            )
+            moves_vals = []
+            for move, (qty_to_return, uom) in moves_to_return_qty.items():
+                move_vals = move.copy_data(
+                    new_picking._prepare_return_move_default_values(move)
+                )[0]
+                # The quantity to return is expressed in the product UoM
+                move_vals.update(
+                    {
+                        "product_uom_qty": qty_to_return,
+                        "uom_id": uom.id,
+                    }
                 )
+                moves_vals.append(move_vals)
+            self.env["stock.move"].create(moves_vals)
+            new_picking.action_confirm()
+            new_picking.action_assign()
+            # Do not copy the responsible user from the source picking as somebody
+            # else could scan the new cancel picking
+            new_picking.user_id = False
 
-                action = return_wiz.action_create_returns()
-                cancel_picking = self.picking_id.browse(action["res_id"])
-                # Do not copy the responsible user from the source picking as somebody
-                # else could scan the new cancel picking
-                cancel_picking.user_id = False
-
-                returned_moves = return_wiz.product_return_moves.move_id
-                pickings_to_assign = returned_moves.move_dest_ids.picking_id.filtered(
-                    lambda picking, cancel_picking=cancel_picking: (
+            pickings_to_assign = (
+                returned_origin_moves.move_dest_ids.picking_id.filtered(
+                    lambda picking, cancel_picking=new_picking: (
                         picking.id != cancel_picking.id and picking.state == "confirmed"
                     )
                 )
-                if pickings_to_assign:
-                    pickings_to_assign.action_assign()
+            )
+            if pickings_to_assign:
+                pickings_to_assign.action_assign()
         return True
 
     def _unrelease_set_returnable_qty_per_move(
@@ -785,7 +778,7 @@ class StockMove(models.Model):
     ):
         returnable_qty = 0
         for move in self:
-            rounding = move.product_id.uom_id.rounding
+            uom = move.product_id.uom_id
             # As a move might have multiple dest ids, we might have
             # already planned to return a few units already.
             # Get it, and deduce it from the returnable qty
@@ -799,13 +792,13 @@ class StockMove(models.Model):
             move_returnable_qty = min(
                 qty_to_return, move.product_qty - move_returned_qty - move_qty_planned
             )
-            if float_is_zero(move_returnable_qty, precision_rounding=rounding):
+            if uom.is_zero(move_returnable_qty):
                 continue
             # Update the quantity
             qty_to_return_per_move[move.id] += move_returnable_qty
             qty_to_return -= move_returnable_qty
             returnable_qty += move_returnable_qty
-            if float_is_zero(qty_to_return, precision_rounding=rounding):
+            if uom.is_zero(qty_to_return):
                 break
         return returnable_qty
 
@@ -825,7 +818,7 @@ class StockMove(models.Model):
 
         qty_to_return_per_move = defaultdict(float)
         for move in moves_to_unrelease:
-            rounding = move.product_id.uom_id.rounding
+            uom = move.product_id.uom_id
             # When a move is returned, it is going straight to WH/Stock,
             # skipping all intermediate zones (pick/pack).
             # That is why we need to keep track of qty returned along the way.
@@ -842,7 +835,7 @@ class StockMove(models.Model):
             next(iterator)  # skip the current move
             for origin_moves in iterator:
                 qty_to_cancel = qty_to_unrelease - qty_returned_for_move
-                if float_is_zero(qty_to_cancel, precision_rounding=rounding):
+                if uom.is_zero(qty_to_cancel):
                     break
                 todo_origin_moves = origin_moves.filtered(
                     lambda m: m.state not in ("done", "cancel")
@@ -870,7 +863,7 @@ class StockMove(models.Model):
                     done_dest_moves.mapped("quantity")
                 )
                 qty_to_return = min(qty_to_return, returnable_qty)
-                if float_compare(qty_to_return, 0, precision_rounding=rounding) <= 0:
+                if uom.compare(qty_to_return, 0) <= 0:
                     continue
                 if not move.rule_id.allow_unrelease_return_done_move:
                     # Without allow_unrelease_return_done_move enabled,
@@ -923,11 +916,11 @@ class StockMove(models.Model):
             qty = self.product_qty
         # Unreserve goods before the split
         origins._do_unreserve()
-        rounding = self.product_uom.rounding
+        uom = self.uom_id
         new_origin_moves = self.env["stock.move"]
-        while float_compare(qty, 0, precision_rounding=rounding) > 0 and origins:
+        while uom.compare(qty, 0) > 0 and origins:
             origin = origins[:1]
-            if float_compare(qty, origin.product_qty, precision_rounding=rounding) >= 0:
+            if uom.compare(qty, origin.product_qty) >= 0:
                 qty -= origin.product_qty
                 new_origin_moves |= origin
             else:

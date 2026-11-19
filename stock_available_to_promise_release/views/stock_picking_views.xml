@@ -21,7 +21,7 @@
                     name="action_open_move_need_release"
                     invisible="not need_release"
                     class="oe_stat_button"
-                    icon="fa-cubes"
+                    icon="inventory_2"
                 >
                     <div class="o_field_widget o_stat_info mr4">
                         <span class="o_stat_text">Release:</span>
@@ -44,7 +44,7 @@
                     invisible="not unrelease_allowed"
                     string="Unrelease"
                     type="object"
-                    icon="fa-cube"
+                    icon="deployed_code"
                     groups="stock.group_stock_user"
                 />
             </field>
@@ -120,7 +120,7 @@
                     name="action_open_move_need_release"
                     string="View Move Allocations"
                     title="View Move Allocations"
-                    icon="fa-cubes"
+                    icon="inventory_2"
                     type="object"
                     invisible="not need_release"
                 />

@@ -1,6 +1,6 @@
 # Copyright 2025 Michael Tietz (MT Software) <mtietz@mt-software.de>
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl)
-from datetime import datetime
+from odoo import fields
 
 from .common import PromiseReleaseCommonCase
 
@@ -35,10 +35,14 @@ class TestAvailableToPromiseReleaseCancelFixedPick(PromiseReleaseCommonCase):
 
     def test_full_cancel(self):
         picking_chain1 = self._create_picking_chain(
-            self.wh, [(self.product1, 10)], date=datetime(2019, 9, 2, 16, 0)
+            self.wh,
+            [(self.product1, 10)],
+            date=fields.Datetime.to_datetime("2019-09-02 16:00:00"),
         )
         picking_chain2 = self._create_picking_chain(
-            self.wh, [(self.product1, 10)], date=datetime(2019, 9, 2, 16, 0)
+            self.wh,
+            [(self.product1, 10)],
+            date=fields.Datetime.to_datetime("2019-09-02 16:00:00"),
         )
         ship_picking1 = self._out_picking(picking_chain1)
         ship_picking1.release_available_to_promise()
@@ -57,12 +61,12 @@ class TestAvailableToPromiseReleaseCancelFixedPick(PromiseReleaseCommonCase):
         picking_chain1 = self._create_picking_chain(
             self.wh,
             [(self.product1, 10), (self.product2, 10)],
-            date=datetime(2019, 9, 2, 16, 0),
+            date=fields.Datetime.to_datetime("2019-09-02 16:00:00"),
         )
         picking_chain2 = self._create_picking_chain(
             self.wh,
             [(self.product1, 10), (self.product2, 10)],
-            date=datetime(2019, 9, 2, 16, 0),
+            date=fields.Datetime.to_datetime("2019-09-02 16:00:00"),
         )
         ship_picking1 = self._out_picking(picking_chain1)
         ship_picking1.release_available_to_promise()

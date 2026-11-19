@@ -1,7 +1,7 @@
 # Copyright 2023 Camptocamp SA
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl)
 
-from datetime import datetime
+from odoo import fields
 
 from .common import PromiseReleaseCommonCase
 
@@ -11,11 +11,15 @@ class TestAvailableToPromiseRelease(PromiseReleaseCommonCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.pc1 = cls._create_picking_chain(
-            cls.wh, [(cls.product1, 2)], date=datetime(2019, 9, 2, 16, 0)
+            cls.wh,
+            [(cls.product1, 2)],
+            date=fields.Datetime.to_datetime("2019-09-02 16:00:00"),
         )
         cls.shipping1 = cls._out_picking(cls.pc1)
         cls.pc2 = cls._create_picking_chain(
-            cls.wh, [(cls.product1, 3)], date=datetime(2019, 9, 2, 16, 0)
+            cls.wh,
+            [(cls.product1, 3)],
+            date=fields.Datetime.to_datetime("2019-09-02 16:00:00"),
         )
         cls.shipping2 = cls._out_picking(cls.pc2)
         cls._update_qty_in_location(cls.loc_bin1, cls.product1, 15.0)

@@ -3,14 +3,14 @@
 
 {
     "name": "Stock Available to Promise Release",
-    "version": "19.0.1.0.0",
+    "version": "20.0.1.0.0",
     "summary": "Release Operations based on available to promise",
     "author": "Camptocamp, BCIM, Odoo Community Association (OCA)",
     "website": "https://github.com/OCA/stock-logistics-reservation",
     "category": "Stock Management",
     "depends": ["stock", "stock_warehouse_out_pull"],
     "data": [
-        "security/ir.model.access.csv",
+        "security/ir.access.csv",
         "views/product_product_views.xml",
         "views/stock_move_views.xml",
         "views/stock_picking_views.xml",

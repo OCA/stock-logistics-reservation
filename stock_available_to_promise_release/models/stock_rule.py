@@ -33,7 +33,7 @@ class StockRule(models.Model):
                 not self.env.context.get("_rule_no_available_defer")
                 and rule.available_to_promise_defer_pull
                 # We still want to create the first part of the chain
-                and not rule.picking_type_id.code == "outgoing"
+                and rule.picking_type_id.code != "outgoing"
             ):
                 moves = procurement.values.get("move_dest_ids")
                 # Track the moves that need to have their pull rule

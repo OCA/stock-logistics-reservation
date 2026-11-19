@@ -2,10 +2,9 @@
 # Copyright 2024 Michael Tietz (MT Software) <mtietz@mt-software.de>
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl.html).
 
-from datetime import datetime
-
-from dateutil.relativedelta import relativedelta
 from freezegun import freeze_time
+
+from odoo import fields
 
 from .common import PromiseReleaseCommonCase
 
@@ -16,7 +15,7 @@ class TestAvailableToPromiseRelease(PromiseReleaseCommonCase):
             {
                 "product_id": self.product1.id,
                 "product_uom_qty": 1,
-                "product_uom": self.uom_unit.id,
+                "uom_id": self.uom_unit.id,
                 "warehouse_id": self.wh.id,
                 "location_id": self.loc_stock.id,
                 "location_dest_id": self.loc_customer.id,
@@ -27,8 +26,8 @@ class TestAvailableToPromiseRelease(PromiseReleaseCommonCase):
 
         # set 15 days
         self.env.company.stock_reservation_horizon = 15
-        from_date = datetime.now().replace(hour=23, minute=59, second=59)
-        to_date = from_date + relativedelta(days=15)
+        from_date = fields.Datetime.now().replace(hour=23, minute=59, second=59)
+        to_date = fields.Datetime.add(from_date, days=15)
         self.assertEqual(
             # skip millisec
             move._promise_reservation_horizon_date().timetuple()[:6],
@@ -37,7 +36,7 @@ class TestAvailableToPromiseRelease(PromiseReleaseCommonCase):
 
         # lower to 5
         self.env.company.stock_reservation_horizon = 5
-        to_date = from_date + relativedelta(days=5)
+        to_date = fields.Datetime.add(from_date, days=5)
         self.assertEqual(
             # skip millisec
             move._promise_reservation_horizon_date().timetuple()[:6],
@@ -47,31 +46,41 @@ class TestAvailableToPromiseRelease(PromiseReleaseCommonCase):
     def _create_pickings(self):
         picking = self._out_picking(
             self._create_picking_chain(
-                self.wh, [(self.product1, 5)], date=datetime(2019, 9, 2, 16, 0)
+                self.wh,
+                [(self.product1, 5)],
+                date=fields.Datetime.to_datetime("2019-09-02 16:00:00"),
             )
         )
         picking2 = self._out_picking(
             self._create_picking_chain(
-                self.wh, [(self.product1, 3)], date=datetime(2019, 9, 3, 16, 1)
+                self.wh,
+                [(self.product1, 3)],
+                date=fields.Datetime.to_datetime("2019-09-03 16:01:00"),
             )
         )
         # we'll assign this one in the test, should deduct pick 1 and 2
         picking3 = self._out_picking(
             self._create_picking_chain(
-                self.wh, [(self.product1, 20)], date=datetime(2019, 9, 4, 16, 0)
+                self.wh,
+                [(self.product1, 20)],
+                date=fields.Datetime.to_datetime("2019-09-04 16:00:00"),
             )
         )
         # this one should be ignored when we'll assign pick 3 as it has
         # a later date
         picking4 = self._out_picking(
             self._create_picking_chain(
-                self.wh, [(self.product1, 20)], date=datetime(2019, 9, 5, 16, 1)
+                self.wh,
+                [(self.product1, 20)],
+                date=fields.Datetime.to_datetime("2019-09-05 16:01:00"),
             )
         )
         # another one to test priority ordering
         picking5 = self._out_picking(
             self._create_picking_chain(
-                self.wh, [(self.product1, 15)], date=datetime(2019, 9, 6, 16, 1)
+                self.wh,
+                [(self.product1, 15)],
+                date=fields.Datetime.to_datetime("2019-09-06 16:01:00"),
             )
         )
         for pick in (picking, picking2, picking3, picking4, picking5):
@@ -102,7 +111,7 @@ class TestAvailableToPromiseRelease(PromiseReleaseCommonCase):
 
     def test_ordered_available_to_promise_value_consider_already_released(self):
         self.wh.delivery_route_id.write({"available_to_promise_defer_pull": True})
-        picking, picking2, picking3, picking4, picking5 = self._create_pickings()
+        picking, picking2, picking3, _picking4, _picking5 = self._create_pickings()
         self._update_qty_in_location(self.loc_bin1, self.product1, 20.0)
         # release picking 1
         picking.move_ids.release_available_to_promise()
@@ -126,14 +135,14 @@ class TestAvailableToPromiseRelease(PromiseReleaseCommonCase):
             self._create_picking_chain(
                 self.wh,
                 [(self.product1, 3), (self.product2, 5)],
-                date=datetime(2019, 9, 2, 16, 0),
+                date=fields.Datetime.to_datetime("2019-09-02 16:00:00"),
             )
         )
         picking2 = self._out_picking(
             self._create_picking_chain(
                 self.wh,
                 [(self.product1, 5), (self.product2, 10)],
-                date=datetime(2019, 9, 3, 16, 0),
+                date=fields.Datetime.to_datetime("2019-09-03 16:00:00"),
             )
         )
         self._update_qty_in_location(self.loc_bin1, self.product1, 8.0)
@@ -192,7 +201,7 @@ class TestAvailableToPromiseRelease(PromiseReleaseCommonCase):
             self._create_picking_chain(
                 self.wh,
                 [(self.product1, 5), (self.product2, 5)],
-                date=datetime(2019, 9, 2, 16, 0),
+                date=fields.Datetime.to_datetime("2019-09-02 16:00:00"),
                 move_type="direct",
             )
         )
@@ -201,7 +210,7 @@ class TestAvailableToPromiseRelease(PromiseReleaseCommonCase):
             self._create_picking_chain(
                 self.wh,
                 [(self.product1, 5), (self.product2, 5)],
-                date=datetime(2019, 9, 2, 16, 0),
+                date=fields.Datetime.to_datetime("2019-09-02 16:00:00"),
                 move_type="direct",
             )
         )
@@ -222,7 +231,7 @@ class TestAvailableToPromiseRelease(PromiseReleaseCommonCase):
             self._create_picking_chain(
                 self.wh,
                 [(self.product1, 5), (self.product2, 5)],
-                date=datetime(2019, 9, 2, 16, 0),
+                date=fields.Datetime.to_datetime("2019-09-02 16:00:00"),
                 move_type="direct",
             )
         )
@@ -230,7 +239,7 @@ class TestAvailableToPromiseRelease(PromiseReleaseCommonCase):
             self._create_picking_chain(
                 self.wh,
                 [(self.product1, 5), (self.product2, 5)],
-                date=datetime(2019, 9, 2, 16, 0),
+                date=fields.Datetime.to_datetime("2019-09-02 16:00:00"),
                 move_type="one",
             )
         )
@@ -517,7 +526,7 @@ class TestAvailableToPromiseRelease(PromiseReleaseCommonCase):
                 }
             ],
         )
-        release_date = datetime(2022, 11, 10, 17, 21)
+        release_date = fields.Datetime.to_datetime("2022-11-10 17:21:00")
         with freeze_time(release_date):
             cust_picking.move_ids.release_available_to_promise()
         split_cust_picking = cust_picking.backorder_ids
@@ -978,7 +987,7 @@ class TestAvailableToPromiseRelease(PromiseReleaseCommonCase):
             [
                 {
                     "state": "waiting",
-                    "product_uom": uom_dozen.id,
+                    "uom_id": uom_dozen.id,
                     "product_qty": 24.0,
                     "product_uom_qty": 2.0,
                     # the quantity is based on the same unit as the
@@ -1119,7 +1128,9 @@ class TestAvailableToPromiseRelease(PromiseReleaseCommonCase):
         )
 
         # late need_release are not in "late" neither
-        picking1.scheduled_date = datetime.now() - relativedelta(days=1)
+        picking1.scheduled_date = fields.Datetime.subtract(
+            fields.Datetime.now(), days=1
+        )
         out_type.env.invalidate_all()
         self.assertRecordValues(
             out_type,
@@ -1151,11 +1162,11 @@ class TestAvailableToPromiseRelease(PromiseReleaseCommonCase):
         self.env.company.stock_release_max_prep_time = 120
         picking = self._create_picking_chain(self.wh, [(self.product1, 20)])
         self._update_qty_in_location(self.loc_bin1, self.product1, 20.0)
-        fake_now = datetime(2020, 11, 12, 14, 00)
+        fake_now = fields.Datetime.to_datetime("2020-11-12 14:00:00")
         with freeze_time(fake_now):
             picking.release_available_to_promise()
         # we add 120 minutes
-        expected_scheduled_date = datetime(2020, 11, 12, 16, 00)
+        expected_scheduled_date = fields.Datetime.to_datetime("2020-11-12 16:00:00")
         self.assertEqual(picking.scheduled_date, expected_scheduled_date)
 
         pick_picking = picking.move_ids.move_orig_ids.picking_id
@@ -1265,7 +1276,7 @@ class TestAvailableToPromiseRelease(PromiseReleaseCommonCase):
             self._create_picking_chain(
                 self.wh,
                 [(self.product1, 10), (self.product2, 10)],
-                date=datetime(2019, 9, 2, 16, 0),
+                date=fields.Datetime.to_datetime("2019-09-02 16:00:00"),
                 move_type="one",
             )
         )

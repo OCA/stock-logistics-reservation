@@ -176,8 +176,29 @@ class StockPicking(models.Model):
         action["context"] = {}
         return action
 
-    def _create_backorder(self, backorder_moves=None):
-        backorders = super()._create_backorder(backorder_moves=backorder_moves)
+    def _prepare_return_picking_default_values(self):
+        res = super()._prepare_return_picking_default_values()
+        # Update the destination location if provided in context
+        # (used for unrelease return logic).
+        unrelease_return_type_loc_dest_id = self.env.context.get("return_loc_dest_id")
+        if unrelease_return_type_loc_dest_id:
+            res["location_dest_id"] = unrelease_return_type_loc_dest_id
+        return res
+
+    def _prepare_return_move_default_values(self, move_id):
+        vals = super()._prepare_return_move_default_values(move_id)
+        # Update the destination location if provided in context
+        # (used for unrelease return logic).
+        unrelease_return_type_loc_dest_id = self.env.context.get("return_loc_dest_id")
+        if unrelease_return_type_loc_dest_id:
+            vals["location_dest_id"] = unrelease_return_type_loc_dest_id
+        return vals
+
+    def _create_backorder(self, backorder_moves=None, from_manual_backorder=False):
+        backorders = super()._create_backorder(
+            backorder_moves=backorder_moves,
+            from_manual_backorder=from_manual_backorder,
+        )
         backorders_to_unrelease = backorders.filtered(
             lambda p: p.picking_type_id.unrelease_on_backorder
         )

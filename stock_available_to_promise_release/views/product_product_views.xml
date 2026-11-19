@@ -16,7 +16,7 @@
                     name="action_open_move_need_release"
                     invisible="not move_need_release_count"
                     class="oe_stat_button"
-                    icon="fa-cubes"
+                    icon="inventory_2"
                     groups="stock.group_stock_manager"
                 >
                     <field
