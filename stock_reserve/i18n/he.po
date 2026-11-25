@@ -19,6 +19,26 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #. module: stock_reserve
+#: model:ir.model.fields,help:stock_reserve.field_stock_reservation__picking_state
+msgid ""
+" * Draft: The transfer is not confirmed yet. Reservation doesn't apply.\n"
+" * Waiting another operation: This transfer is waiting for another operation "
+"before being ready.\n"
+" * Waiting: The transfer is waiting for the availability of some products.\n"
+"(a) The shipping policy is \"As soon as possible\": no product could be "
+"reserved.\n"
+"(b) The shipping policy is \"When all products are ready\": not all the "
+"products could be reserved.\n"
+" * Ready: The transfer is ready to be processed.\n"
+"(a) The shipping policy is \"As soon as possible\": at least one product has "
+"been reserved.\n"
+"(b) The shipping policy is \"When all products are ready\": all product have "
+"been reserved.\n"
+" * Done: The transfer has been processed.\n"
+" * Cancelled: The transfer has been cancelled."
+msgstr ""
+
+#. module: stock_reserve
 #: model:ir.model.fields,field_description:stock_reserve.field_product_product__reservation_count
 #: model:ir.model.fields,field_description:stock_reserve.field_product_template__reservation_count
 msgid "# Sales"
@@ -56,12 +76,8 @@ msgid ""
 msgstr ""
 
 #. module: stock_reserve
-#: model:ir.model.fields,help:stock_reserve.field_stock_reservation__product_type
-msgid ""
-"A storable product is a product for which you manage stock. The Inventory "
-"app has to be installed.\n"
-"A consumable product is a product for which stock is not managed.\n"
-"A service is a non-material product you provide."
+#: model:ir.model.fields,help:stock_reserve.field_stock_reservation__is_storable
+msgid "A storable product is a product for which you manage stock."
 msgstr ""
 
 #. module: stock_reserve
@@ -128,6 +144,11 @@ msgid ""
 msgstr ""
 
 #. module: stock_reserve
+#: model:ir.model.fields,field_description:stock_reserve.field_stock_reservation__created_purchase_line_ids
+msgid "Created Purchase Order Lines"
+msgstr ""
+
+#. module: stock_reserve
 #: model:ir.model.fields,field_description:stock_reserve.field_stock_reservation__create_uid
 msgid "Created by"
 msgstr "נוצר על ידי"
@@ -136,11 +157,6 @@ msgstr "נוצר על ידי"
 #: model:ir.model.fields,field_description:stock_reserve.field_stock_reservation__create_date
 msgid "Created on"
 msgstr "נוצר ב-"
-
-#. module: stock_reserve
-#: model:ir.model.fields,help:stock_reserve.field_stock_reservation__date_deadline
-msgid "Date Promise to the customer on the top level document (SO/PO)"
-msgstr ""
 
 #. module: stock_reserve
 #: model:ir.model.fields,field_description:stock_reserve.field_stock_reservation__date
@@ -180,11 +196,6 @@ msgstr ""
 #. module: stock_reserve
 #: model:ir.model.fields,field_description:stock_reserve.field_stock_reservation__partner_id
 msgid "Destination Address "
-msgstr ""
-
-#. module: stock_reserve
-#: model:ir.model.fields,field_description:stock_reserve.field_stock_reservation__location_dest_id
-msgid "Destination Location"
 msgstr ""
 
 #. module: stock_reserve
@@ -243,8 +254,13 @@ msgid "Ensure the traceability of a storable product in your warehouse."
 msgstr ""
 
 #. module: stock_reserve
+#: model:ir.model.fields,field_description:stock_reserve.field_stock_reservation__location_final_id
+msgid "Final Location"
+msgstr ""
+
+#. module: stock_reserve
 #: model:ir.model.fields,field_description:stock_reserve.field_stock_reservation__next_serial
-msgid "First SN"
+msgid "First SN/Lot"
 msgstr ""
 
 #. module: stock_reserve
@@ -291,6 +307,20 @@ msgid "If ticked, you will be able to select entire packages to move"
 msgstr ""
 
 #. module: stock_reserve
+#: model:ir.model.fields,help:stock_reserve.field_stock_reservation__date_deadline
+msgid ""
+"In case of outgoing flow, validate the transfer before this date to allow to "
+"deliver at promised date to the customer.\n"
+"        In case of incoming flow, validate the transfer before this date in "
+"order to have these products in stock at the date promised by the supplier"
+msgstr ""
+
+#. module: stock_reserve
+#: model:ir.model.fields,field_description:stock_reserve.field_stock_reservation__location_dest_id
+msgid "Intermediate Location"
+msgstr ""
+
+#. module: stock_reserve
 #: model:ir.model.fields,field_description:stock_reserve.field_stock_reservation__is_inventory
 msgid "Inventory"
 msgstr ""
@@ -319,11 +349,6 @@ msgstr "עודכן לאחרונה על ידי"
 #: model:ir.model.fields,field_description:stock_reserve.field_stock_reservation__write_date
 msgid "Last Updated on"
 msgstr "עודכן לאחרונה על"
-
-#. module: stock_reserve
-#: model:ir.model.fields,help:stock_reserve.field_stock_reservation__location_dest_id
-msgid "Location where the system will stock the finished products."
-msgstr ""
 
 #. module: stock_reserve
 #: model_terms:ir.ui.view,arch_db:stock_reserve.view_stock_reservation_form
@@ -361,6 +386,11 @@ msgid "Moves are reserved."
 msgstr ""
 
 #. module: stock_reserve
+#: model:ir.model.fields,field_description:stock_reserve.field_stock_reservation__never_product_template_attribute_value_ids
+msgid "Never attribute Values"
+msgstr ""
+
+#. module: stock_reserve
 #: model_terms:ir.ui.view,arch_db:stock_reserve.view_stock_reservation_search
 msgid "Not already reserved"
 msgstr ""
@@ -372,7 +402,7 @@ msgstr ""
 
 #. module: stock_reserve
 #: model:ir.model.fields,field_description:stock_reserve.field_stock_reservation__next_serial_count
-msgid "Number of SN"
+msgid "Number of SN/Lots"
 msgstr ""
 
 #. module: stock_reserve
@@ -438,6 +468,11 @@ msgid "Picked"
 msgstr ""
 
 #. module: stock_reserve
+#: model:ir.model.fields,field_description:stock_reserve.field_stock_reservation__picking_state
+msgid "Picking Status"
+msgstr ""
+
+#. module: stock_reserve
 #: model:ir.model.fields,help:stock_reserve.field_stock_reservation__route_ids
 msgid "Preferred route"
 msgstr ""
@@ -470,11 +505,6 @@ msgid "Product Template"
 msgstr ""
 
 #. module: stock_reserve
-#: model:ir.model.fields,field_description:stock_reserve.field_stock_reservation__product_type
-msgid "Product Type"
-msgstr ""
-
-#. module: stock_reserve
 #: model_terms:ir.ui.view,arch_db:stock_reserve.view_stock_reservation_search
 msgid "Product UoM"
 msgstr ""
@@ -495,6 +525,16 @@ msgid "Propagate cancel and split"
 msgstr ""
 
 #. module: stock_reserve
+#: model:ir.model.fields,field_description:stock_reserve.field_stock_reservation__purchase_line_id
+msgid "Purchase Order Line"
+msgstr ""
+
+#. module: stock_reserve
+#: model:ir.model.fields,field_description:stock_reserve.field_stock_reservation__qty_in_stock
+msgid "Qty In Stock"
+msgstr ""
+
+#. module: stock_reserve
 #: model:ir.model.fields,field_description:stock_reserve.field_stock_reservation__quantity
 msgid "Quantity"
 msgstr ""
@@ -512,11 +552,6 @@ msgstr ""
 #. module: stock_reserve
 #: model:ir.model.fields,field_description:stock_reserve.field_stock_reservation__product_qty
 msgid "Real Quantity"
-msgstr ""
-
-#. module: stock_reserve
-#: model:ir.model.fields,field_description:stock_reserve.field_stock_reservation__reason_code_id
-msgid "Reason Code"
 msgstr ""
 
 #. module: stock_reserve
@@ -545,7 +580,6 @@ msgstr ""
 #. odoo-python
 #: code:addons/stock_reserve/model/stock_reserve.py:0
 #: model:ir.model.fields,field_description:stock_reserve.field_stock_reservation__move_id
-#, python-format
 msgid "Reservation Move"
 msgstr ""
 
@@ -568,6 +602,11 @@ msgstr ""
 #. module: stock_reserve
 #: model:ir.model.fields,field_description:stock_reserve.field_stock_reservation__product_packaging_qty
 msgid "Reserved Packaging Quantity"
+msgstr ""
+
+#. module: stock_reserve
+#: model:ir.model.fields,field_description:stock_reserve.field_stock_reservation__sale_line_id
+msgid "Sale Line"
 msgstr ""
 
 #. module: stock_reserve
@@ -596,25 +635,18 @@ msgid "Serial Numbers"
 msgstr ""
 
 #. module: stock_reserve
-#: model:ir.model.fields,help:stock_reserve.field_stock_reservation__location_id
-msgid ""
-"Sets a location if you produce at a fixed location. This can be a partner "
-"location if you subcontract the manufacturing operations."
-msgstr ""
-
-#. module: stock_reserve
 #: model:ir.model.fields,field_description:stock_reserve.field_stock_reservation__show_operations
 msgid "Show Detailed Operations"
 msgstr ""
 
 #. module: stock_reserve
-#: model:ir.model.fields,field_description:stock_reserve.field_stock_reservation__show_quant
-msgid "Show Quant"
+#: model:ir.model.fields,field_description:stock_reserve.field_stock_reservation__show_force_quantity
+msgid "Show Force Quantity"
 msgstr ""
 
 #. module: stock_reserve
-#: model:ir.model.fields,field_description:stock_reserve.field_stock_reservation__show_reserved
-msgid "Show Reserved"
+#: model:ir.model.fields,field_description:stock_reserve.field_stock_reservation__show_quant
+msgid "Show Quant"
 msgstr ""
 
 #. module: stock_reserve
@@ -685,6 +717,23 @@ msgid "Supply Method"
 msgstr ""
 
 #. module: stock_reserve
+#: model:ir.model.fields,help:stock_reserve.field_stock_reservation__location_final_id
+msgid ""
+"The operation brings the products to the intermediate location.But this "
+"operation is part of a chain of operations targeting the final location."
+msgstr ""
+
+#. module: stock_reserve
+#: model:ir.model.fields,help:stock_reserve.field_stock_reservation__location_id
+msgid "The operation takes and suggests products from this location."
+msgstr ""
+
+#. module: stock_reserve
+#: model:ir.model.fields,help:stock_reserve.field_stock_reservation__location_dest_id
+msgid "The operations brings product to this location"
+msgstr ""
+
+#. module: stock_reserve
 #: model:ir.model.fields,help:stock_reserve.field_stock_reservation__rule_id
 msgid "The stock rule that created this stock move"
 msgstr ""
@@ -715,6 +764,11 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:stock_reserve.view_stock_reservation_tree
 msgid "Total"
 msgstr "סה\"כ"
+
+#. module: stock_reserve
+#: model:ir.model.fields,field_description:stock_reserve.field_stock_reservation__is_storable
+msgid "Track Inventory"
+msgstr ""
 
 #. module: stock_reserve
 #: model:ir.model.fields,field_description:stock_reserve.field_stock_reservation__picking_id
@@ -749,6 +803,11 @@ msgid "Update quantities on SO/PO"
 msgstr ""
 
 #. module: stock_reserve
+#: model:ir.model.fields,field_description:stock_reserve.field_stock_reservation__use_expiration_date
+msgid "Use Expiration Date"
+msgstr ""
+
+#. module: stock_reserve
 #: model:ir.model.fields,field_description:stock_reserve.field_stock_reservation__date_validity
 msgid "Validity Date"
 msgstr ""
@@ -771,6 +830,19 @@ msgstr ""
 #. module: stock_reserve
 #: model:ir.model.fields,field_description:stock_reserve.field_stock_reservation__warehouse_id
 msgid "Warehouse"
+msgstr ""
+
+#. module: stock_reserve
+#: model:ir.model.fields,field_description:stock_reserve.field_stock_reservation__weight
+msgid "Weight"
+msgstr ""
+
+#. module: stock_reserve
+#: model:ir.model.fields,help:stock_reserve.field_stock_reservation__use_expiration_date
+msgid ""
+"When this box is ticked, you have the possibility to specify dates to manage "
+"product expiration, on the product and on the corresponding lot/serial "
+"numbers"
 msgstr ""
 
 #. module: stock_reserve
