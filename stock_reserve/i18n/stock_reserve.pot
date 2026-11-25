@@ -14,6 +14,21 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. module: stock_reserve
+#: model:ir.model.fields,help:stock_reserve.field_stock_reservation__picking_state
+msgid ""
+" * Draft: The transfer is not confirmed yet. Reservation doesn't apply.\n"
+" * Waiting another operation: This transfer is waiting for another operation before being ready.\n"
+" * Waiting: The transfer is waiting for the availability of some products.\n"
+"(a) The shipping policy is \"As soon as possible\": no product could be reserved.\n"
+"(b) The shipping policy is \"When all products are ready\": not all the products could be reserved.\n"
+" * Ready: The transfer is ready to be processed.\n"
+"(a) The shipping policy is \"As soon as possible\": at least one product has been reserved.\n"
+"(b) The shipping policy is \"When all products are ready\": all product have been reserved.\n"
+" * Done: The transfer has been processed.\n"
+" * Cancelled: The transfer has been cancelled."
+msgstr ""
+
+#. module: stock_reserve
 #: model:ir.model.fields,field_description:stock_reserve.field_product_product__reservation_count
 #: model:ir.model.fields,field_description:stock_reserve.field_product_template__reservation_count
 msgid "# Sales"
@@ -433,6 +448,11 @@ msgid "Picked"
 msgstr ""
 
 #. module: stock_reserve
+#: model:ir.model.fields,field_description:stock_reserve.field_stock_reservation__picking_state
+msgid "Picking Status"
+msgstr ""
+
+#. module: stock_reserve
 #: model:ir.model.fields,help:stock_reserve.field_stock_reservation__route_ids
 msgid "Preferred route"
 msgstr ""
@@ -487,6 +507,11 @@ msgstr ""
 #. module: stock_reserve
 #: model:ir.model.fields,field_description:stock_reserve.field_stock_reservation__purchase_line_id
 msgid "Purchase Order Line"
+msgstr ""
+
+#. module: stock_reserve
+#: model:ir.model.fields,field_description:stock_reserve.field_stock_reservation__qty_in_stock
+msgid "Qty In Stock"
 msgstr ""
 
 #. module: stock_reserve
@@ -592,6 +617,11 @@ msgstr ""
 #. module: stock_reserve
 #: model:ir.model.fields,field_description:stock_reserve.field_stock_reservation__show_operations
 msgid "Show Detailed Operations"
+msgstr ""
+
+#. module: stock_reserve
+#: model:ir.model.fields,field_description:stock_reserve.field_stock_reservation__show_force_quantity
+msgid "Show Force Quantity"
 msgstr ""
 
 #. module: stock_reserve
