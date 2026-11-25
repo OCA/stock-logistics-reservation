@@ -1,6 +1,6 @@
 [project]
 name = "odoo-addons-oca-stock-logistics-reservation"
-version = "18.0.20261117.0"
+version = "18.0.20261125.0"
 dependencies = [
     "odoo-addon-product_expiry_assign==18.0.*",
     "odoo-addon-sale_stock_available_to_promise_release==18.0.*",
@@ -12,6 +12,7 @@ dependencies = [
     "odoo-addon-stock_available_to_promise_release_exclude_location==18.0.*",
     "odoo-addon-stock_available_to_promise_release_weight_volume==18.0.*",
     "odoo-addon-stock_move_auto_assign==18.0.*",
+    "odoo-addon-stock_move_force_reservation==18.0.*",
     "odoo-addon-stock_move_free_reservation_reassign==18.0.*",
     "odoo-addon-stock_picking_unreserve_button==18.0.*",
     "odoo-addon-stock_quant_manual_assign==18.0.*",
