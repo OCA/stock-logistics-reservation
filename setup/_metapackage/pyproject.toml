@@ -1,9 +1,10 @@
 [project]
 name = "odoo-addons-oca-stock-logistics-reservation"
-version = "19.0.20261110.0"
+version = "19.0.20261127.0"
 dependencies = [
     "odoo-addon-stock_available_to_promise_release==19.0.*",
     "odoo-addon-stock_quant_manual_assign==19.0.*",
+    "odoo-addon-stock_reserve==19.0.*",
 ]
 classifiers=[
     "Programming Language :: Python",
