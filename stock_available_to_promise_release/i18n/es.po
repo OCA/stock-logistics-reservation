@@ -149,7 +149,18 @@ msgstr ""
 "utiliza para calcular los pedidos disponibles para prometer."
 
 #. module: stock_available_to_promise_release
+#: model:ir.model.fields,field_description:stock_available_to_promise_release.field_product_product__display_name
+#: model:ir.model.fields,field_description:stock_available_to_promise_release.field_res_company__display_name
+#: model:ir.model.fields,field_description:stock_available_to_promise_release.field_res_config_settings__display_name
+#: model:ir.model.fields,field_description:stock_available_to_promise_release.field_stock_location__display_name
+#: model:ir.model.fields,field_description:stock_available_to_promise_release.field_stock_move__display_name
+#: model:ir.model.fields,field_description:stock_available_to_promise_release.field_stock_picking__display_name
+#: model:ir.model.fields,field_description:stock_available_to_promise_release.field_stock_picking_type__display_name
 #: model:ir.model.fields,field_description:stock_available_to_promise_release.field_stock_release__display_name
+#: model:ir.model.fields,field_description:stock_available_to_promise_release.field_stock_return_picking__display_name
+#: model:ir.model.fields,field_description:stock_available_to_promise_release.field_stock_return_picking_line__display_name
+#: model:ir.model.fields,field_description:stock_available_to_promise_release.field_stock_route__display_name
+#: model:ir.model.fields,field_description:stock_available_to_promise_release.field_stock_rule__display_name
 #: model:ir.model.fields,field_description:stock_available_to_promise_release.field_stock_unrelease__display_name
 msgid "Display Name"
 msgstr "Mostrar Nombre"
@@ -171,7 +182,18 @@ msgid "From"
 msgstr ""
 
 #. module: stock_available_to_promise_release
+#: model:ir.model.fields,field_description:stock_available_to_promise_release.field_product_product__id
+#: model:ir.model.fields,field_description:stock_available_to_promise_release.field_res_company__id
+#: model:ir.model.fields,field_description:stock_available_to_promise_release.field_res_config_settings__id
+#: model:ir.model.fields,field_description:stock_available_to_promise_release.field_stock_location__id
+#: model:ir.model.fields,field_description:stock_available_to_promise_release.field_stock_move__id
+#: model:ir.model.fields,field_description:stock_available_to_promise_release.field_stock_picking__id
+#: model:ir.model.fields,field_description:stock_available_to_promise_release.field_stock_picking_type__id
 #: model:ir.model.fields,field_description:stock_available_to_promise_release.field_stock_release__id
+#: model:ir.model.fields,field_description:stock_available_to_promise_release.field_stock_return_picking__id
+#: model:ir.model.fields,field_description:stock_available_to_promise_release.field_stock_return_picking_line__id
+#: model:ir.model.fields,field_description:stock_available_to_promise_release.field_stock_route__id
+#: model:ir.model.fields,field_description:stock_available_to_promise_release.field_stock_rule__id
 #: model:ir.model.fields,field_description:stock_available_to_promise_release.field_stock_unrelease__id
 msgid "ID"
 msgstr "ID(identificación)"
@@ -307,11 +329,6 @@ msgstr "Impedir un nuevo movimiento tras la liberación"
 #: model:ir.model.fields,field_description:stock_available_to_promise_release.field_stock_reservation__date_priority
 msgid "Priority Date"
 msgstr "Fecha prioritaria"
-
-#. module: stock_available_to_promise_release
-#: model:ir.model,name:stock_available_to_promise_release.model_procurement_group
-msgid "Procurement Group"
-msgstr "Grupo de Adquisiciones"
 
 #. module: stock_available_to_promise_release
 #: model:ir.model,name:stock_available_to_promise_release.model_product_product
@@ -526,18 +543,6 @@ msgid "Unrelease on backorder"
 msgstr "Lanzamiento en espera"
 
 #. module: stock_available_to_promise_release
-#. odoo-python
-#: code:addons/stock_available_to_promise_release/models/stock_move.py:0
-msgid "Unsupported operator %s"
-msgstr "Operador %s no soportado"
-
-#. module: stock_available_to_promise_release
-#. odoo-python
-#: code:addons/stock_available_to_promise_release/models/stock_picking.py:0
-msgid "Unsupported operator: %s"
-msgstr "Operador %s no soportado"
-
-#. module: stock_available_to_promise_release
 #: model_terms:ir.ui.view,arch_db:stock_available_to_promise_release.view_picking_release_tree
 msgid "View Move Allocations"
 msgstr "Ver asignaciones de movimientos"
@@ -598,6 +603,14 @@ msgid "You are not allowed to unrelease those deliveries:\n"
 msgstr ""
 
 #. module: stock_available_to_promise_release
+#. odoo-python
+#: code:addons/stock_available_to_promise_release/models/stock_move.py:0
+msgid ""
+"You cannot unrelease the move %(move_name)s because some origin moves %"
+"(done_move_names)s are done"
+msgstr ""
+
+#. module: stock_available_to_promise_release
 #: model_terms:ir.ui.view,arch_db:stock_available_to_promise_release.res_config_settings_view_form_stock
 msgid "days"
 msgstr "días"
@@ -606,6 +619,15 @@ msgstr "días"
 #: model_terms:ir.ui.view,arch_db:stock_available_to_promise_release.res_config_settings_view_form_stock
 msgid "minutes"
 msgstr "minutos"
+
+#~ msgid "Procurement Group"
+#~ msgstr "Grupo de Adquisiciones"
+
+#~ msgid "Unsupported operator %s"
+#~ msgstr "Operador %s no soportado"
+
+#~ msgid "Unsupported operator: %s"
+#~ msgstr "Operador %s no soportado"
 
 #~ msgid "Stock Allocations Un Release"
 #~ msgstr "Asignaciones de acciones sin publicación"
