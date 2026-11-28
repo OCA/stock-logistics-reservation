@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: Odoo Server 10.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-11-30 03:53+0000\n"
-"PO-Revision-Date: 2024-04-15 17:35+0000\n"
+"PO-Revision-Date: 2026-11-28 17:46+0000\n"
 "Last-Translator: mymage <stefano.consolaro@mymage.it>\n"
 "Language-Team: Italian (https://www.transifex.com/oca/teams/23907/it/)\n"
 "Language: it\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.17\n"
+"X-Generator: Weblate 2026.11.2\n"
 
 #. module: stock_reserve
 #: model:ir.model.fields,help:stock_reserve.field_stock_reservation__picking_state
@@ -39,6 +39,23 @@ msgid ""
 " * Done: The transfer has been processed.\n"
 " * Cancelled: The transfer has been cancelled."
 msgstr ""
+" * Bozza: il trasferimento non è ancora confermato. La prenotazione non si "
+"applica.\n"
+" * In attesa di altra operazione: questo trasferimento è in attesa di "
+"un'altra operazione prima di essere pronto.\n"
+" * In attesa: il trasferimento è in attesa della disponibilità di alcuni "
+"prodotti.\n"
+"(a) La politica di spedizione è \"Appena possibile\": non è stato possibile "
+"prenotare alcun prodotto.\n"
+"(b) La politica di spedizione è \"Quando tutti i prodotti sono pronti\": non "
+"è stato possibile prenotare tutti i prodotti.\n"
+" * Pronto: il trasferimento è pronto per essere elaborato.\n"
+"(a) La politica di spedizione è \"Appena possibile\": almeno un prodotto è "
+"stato prenotato.\n"
+"(b) La politica di spedizione è \"Quando tutti i prodotti sono pronti\": "
+"tutti i prodotti sono stati prenotati.\n"
+" * Completato: il trasferimento è stato elaborato.\n"
+" * Annullato: il trasferimento è stato annullato."
 
 #. module: stock_reserve
 #: model:ir.model.fields,field_description:stock_reserve.field_product_product__reservation_count
@@ -105,6 +122,7 @@ msgstr ""
 #: model:ir.model.fields,help:stock_reserve.field_stock_reservation__is_storable
 msgid "A storable product is a product for which you manage stock."
 msgstr ""
+"Un prodotto stoccabile è un prodotto per il quale si gestisce la giacenza."
 
 #. module: stock_reserve
 #: model:ir.model.fields,field_description:stock_reserve.field_stock_reservation__account_move_ids
@@ -183,7 +201,7 @@ msgstr ""
 #. module: stock_reserve
 #: model:ir.model.fields,field_description:stock_reserve.field_stock_reservation__created_purchase_line_ids
 msgid "Created Purchase Order Lines"
-msgstr ""
+msgstr "Righe ordine di acquisto create"
 
 #. module: stock_reserve
 #: model:ir.model.fields,field_description:stock_reserve.field_stock_reservation__create_uid
@@ -293,12 +311,12 @@ msgstr "Assicura la tracciabilità di un prodotto stoccabile nel magazzino."
 #. module: stock_reserve
 #: model:ir.model.fields,field_description:stock_reserve.field_stock_reservation__location_final_id
 msgid "Final Location"
-msgstr ""
+msgstr "Ubicazione finale"
 
 #. module: stock_reserve
 #: model:ir.model.fields,field_description:stock_reserve.field_stock_reservation__next_serial
 msgid "First SN/Lot"
-msgstr ""
+msgstr "Primo n° di serie/lotto"
 
 #. module: stock_reserve
 #: model:ir.model.fields,field_description:stock_reserve.field_stock_reservation__forecast_availability
@@ -356,11 +374,16 @@ msgid ""
 "        In case of incoming flow, validate the transfer before this date in "
 "order to have these products in stock at the date promised by the supplier"
 msgstr ""
+"In caso di flusso in uscita, validare il trasferimento prima di questa data "
+"per consentire la consegna al cliente alla data promessa.\n"
+"        In caso di flusso in entrata, validare il trasferimento prima di "
+"questa data per avere questi prodotti in giacenza alla data promessa dal "
+"fornitore"
 
 #. module: stock_reserve
 #: model:ir.model.fields,field_description:stock_reserve.field_stock_reservation__location_dest_id
 msgid "Intermediate Location"
-msgstr ""
+msgstr "Ubicazione intermedia"
 
 #. module: stock_reserve
 #: model:ir.model.fields,field_description:stock_reserve.field_stock_reservation__is_inventory
@@ -430,7 +453,7 @@ msgstr "I movimenti sono prenotati."
 #. module: stock_reserve
 #: model:ir.model.fields,field_description:stock_reserve.field_stock_reservation__never_product_template_attribute_value_ids
 msgid "Never attribute Values"
-msgstr ""
+msgstr "Valori attributo mai"
 
 #. module: stock_reserve
 #: model_terms:ir.ui.view,arch_db:stock_reserve.view_stock_reservation_search
@@ -445,7 +468,7 @@ msgstr "Note"
 #. module: stock_reserve
 #: model:ir.model.fields,field_description:stock_reserve.field_stock_reservation__next_serial_count
 msgid "Number of SN/Lots"
-msgstr ""
+msgstr "Numero di n° di serie/lotti"
 
 #. module: stock_reserve
 #: model:ir.model.fields,field_description:stock_reserve.field_stock_reservation__picking_type_id
@@ -514,7 +537,7 @@ msgstr "Prelevato"
 #. module: stock_reserve
 #: model:ir.model.fields,field_description:stock_reserve.field_stock_reservation__picking_state
 msgid "Picking Status"
-msgstr ""
+msgstr "Stato prelievo"
 
 #. module: stock_reserve
 #: model:ir.model.fields,help:stock_reserve.field_stock_reservation__route_ids
@@ -571,12 +594,12 @@ msgstr "Propaga annullamento e suddivisione"
 #. module: stock_reserve
 #: model:ir.model.fields,field_description:stock_reserve.field_stock_reservation__purchase_line_id
 msgid "Purchase Order Line"
-msgstr ""
+msgstr "Riga ordine di acquisto"
 
 #. module: stock_reserve
 #: model:ir.model.fields,field_description:stock_reserve.field_stock_reservation__qty_in_stock
 msgid "Qty In Stock"
-msgstr ""
+msgstr "Qtà in giacenza"
 
 #. module: stock_reserve
 #: model:ir.model.fields,field_description:stock_reserve.field_stock_reservation__quantity
@@ -653,7 +676,7 @@ msgstr "Quantità imballo prenotata"
 #. module: stock_reserve
 #: model:ir.model.fields,field_description:stock_reserve.field_stock_reservation__sale_line_id
 msgid "Sale Line"
-msgstr ""
+msgstr "Riga di vendita"
 
 #. module: stock_reserve
 #: model:ir.model.fields,help:stock_reserve.field_stock_reservation__date
@@ -690,7 +713,7 @@ msgstr "Visualizza operazioni dettagliate"
 #. module: stock_reserve
 #: model:ir.model.fields,field_description:stock_reserve.field_stock_reservation__show_force_quantity
 msgid "Show Force Quantity"
-msgstr ""
+msgstr "Mostra forza quantità"
 
 #. module: stock_reserve
 #: model:ir.model.fields,field_description:stock_reserve.field_stock_reservation__show_quant
@@ -771,16 +794,18 @@ msgid ""
 "The operation brings the products to the intermediate location.But this "
 "operation is part of a chain of operations targeting the final location."
 msgstr ""
+"L'operazione porta i prodotti all'ubicazione intermedia, ma fa parte di una "
+"catena di operazioni destinate all'ubicazione finale."
 
 #. module: stock_reserve
 #: model:ir.model.fields,help:stock_reserve.field_stock_reservation__location_id
 msgid "The operation takes and suggests products from this location."
-msgstr ""
+msgstr "L'operazione preleva e suggerisce prodotti da questa ubicazione."
 
 #. module: stock_reserve
 #: model:ir.model.fields,help:stock_reserve.field_stock_reservation__location_dest_id
 msgid "The operations brings product to this location"
-msgstr ""
+msgstr "L'operazione porta il prodotto in questa ubicazione"
 
 #. module: stock_reserve
 #: model:ir.model.fields,help:stock_reserve.field_stock_reservation__rule_id
@@ -825,7 +850,7 @@ msgstr "Totale"
 #. module: stock_reserve
 #: model:ir.model.fields,field_description:stock_reserve.field_stock_reservation__is_storable
 msgid "Track Inventory"
-msgstr ""
+msgstr "Traccia inventario"
 
 #. module: stock_reserve
 #: model:ir.model.fields,field_description:stock_reserve.field_stock_reservation__picking_id
@@ -864,7 +889,7 @@ msgstr "Aggiorna quantità in OV/OP"
 #. module: stock_reserve
 #: model:ir.model.fields,field_description:stock_reserve.field_stock_reservation__use_expiration_date
 msgid "Use Expiration Date"
-msgstr ""
+msgstr "Usa data di scadenza"
 
 #. module: stock_reserve
 #: model:ir.model.fields,field_description:stock_reserve.field_stock_reservation__date_validity
@@ -894,7 +919,7 @@ msgstr "Magazzino"
 #. module: stock_reserve
 #: model:ir.model.fields,field_description:stock_reserve.field_stock_reservation__weight
 msgid "Weight"
-msgstr ""
+msgstr "Peso"
 
 #. module: stock_reserve
 #: model:ir.model.fields,help:stock_reserve.field_stock_reservation__use_expiration_date
@@ -903,6 +928,9 @@ msgid ""
 "product expiration, on the product and on the corresponding lot/serial "
 "numbers"
 msgstr ""
+"Quando questa casella è selezionata, è possibile specificare le date per "
+"gestire la scadenza del prodotto, sul prodotto e sui relativi numeri di "
+"lotto/serie"
 
 #. module: stock_reserve
 #: model:ir.model.fields,field_description:stock_reserve.field_stock_reservation__additional
